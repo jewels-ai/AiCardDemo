@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>JEWELS-AI | Live Drive AR</title>
+  <title>CHOCO-AI | Live Drive AR</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,10 +14,10 @@
 
   <style>
     :root {
-      --deep: #130821;
-      --deep-2: #1f0d33;
-      --brand-purple: #5E0F8B;
-      --brand-purple-dark: #2c0a49;
+      --deep: #1a0f0a;
+      --deep-2: #2a1810;
+      --brand-purple: #6b3a1f;
+      --brand-purple-dark: #3a1d0e;
       --gold: #D4AF37;
       --gold-soft: #F0D687;
       --cream: #F5EFE6;
@@ -61,7 +61,7 @@
     }
 
     .gem-loader { width: 56px; height: 56px; animation: gemSpin 2.6s ease-in-out infinite; }
-    .gem-loader path {
+    .gem-loader path, .gem-loader line {
       fill: none; stroke: var(--gold); stroke-width: 1.4; stroke-linejoin: round;
       filter: drop-shadow(0 0 6px rgba(212,175,55,0.55));
     }
@@ -138,7 +138,7 @@
 
     #openCatalogBtn {
       position: fixed; bottom: max(25px, env(safe-area-inset-bottom)); left: 20px; z-index: 1000;
-      background: rgba(19, 8, 33, 0.85); border: 1px solid var(--gold); color: var(--gold-soft);
+      background: rgba(26, 15, 10, 0.85); border: 1px solid var(--gold); color: var(--gold-soft);
       display: flex; align-items: center; gap: 8px;
     }
     body.catalog-open #openCatalogBtn { opacity: 0; pointer-events: none; }
@@ -159,7 +159,7 @@
     #catalogSheet {
       position: absolute; inset: 0; height: 100dvh; width: 100vw;
       background:
-        radial-gradient(ellipse at 15% -10%, rgba(94,15,139,0.5) 0%, transparent 50%),
+        radial-gradient(ellipse at 15% -10%, rgba(107,58,31,0.5) 0%, transparent 50%),
         radial-gradient(ellipse at 100% 20%, rgba(212,175,55,0.10) 0%, transparent 45%),
         linear-gradient(180deg, var(--deep-2) 0%, var(--deep) 100%);
       overflow-y: auto; overflow-x: hidden;
@@ -177,7 +177,7 @@
     /* Navbar */
     .site-nav {
       position: sticky; top: 0; z-index: 20;
-      background: rgba(19, 8, 33, 0.82);
+      background: rgba(26, 15, 10, 0.82);
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border-bottom: 1px solid rgba(212,175,55,0.2);
       padding-top: env(safe-area-inset-top);
@@ -227,7 +227,7 @@
     .hero::before {
       content: ""; position: absolute; left: 50%; top: -120px; width: 620px; height: 620px;
       transform: translateX(-50%); border-radius: 50%;
-      background: radial-gradient(circle, rgba(94,15,139,0.55) 0%, transparent 65%);
+      background: radial-gradient(circle, rgba(107,58,31,0.55) 0%, transparent 65%);
       pointer-events: none;
     }
     .hero > * { position: relative; }
@@ -263,7 +263,7 @@
     .stat b { display: block; font-family: 'Cormorant Garamond', serif; font-size: 30px; color: var(--gold-soft); font-weight: 600; }
     .stat span { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--cream-dim); }
 
-    /* Category tiles */
+    /* Section heads */
     .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
     .section-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; margin: 0; color: var(--cream); }
     .section-title small { display: block; font-family: 'Manrope', sans-serif; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; font-weight: 600; }
@@ -271,7 +271,7 @@
     /* Toolbar */
     .toolbar {
       position: sticky; top: 64px; z-index: 15; padding: 12px 0;
-      background: linear-gradient(180deg, rgba(19,8,33,0.95) 60%, rgba(19,8,33,0));
+      background: linear-gradient(180deg, rgba(26,15,10,0.95) 60%, rgba(26,15,10,0));
       margin-top: 10px;
     }
     .toolbar-inner { display: flex; align-items: center; gap: 14px; justify-content: space-between; }
@@ -281,7 +281,7 @@
       padding: 9px 18px; border-radius: 999px; background: var(--glass);
       border: 1px solid var(--glass-border); color: var(--cream); font-family: 'Manrope', sans-serif;
       font-size: 12px; letter-spacing: 1px; white-space: nowrap; cursor: pointer;
-      transition: all 0.2s ease; text-transform: capitalize;
+      transition: all 0.2s ease;
     }
     .category-chip .count { opacity: .6; margin-left: 6px; font-size: 11px; }
     .category-chip:hover { border-color: var(--gold); }
@@ -320,7 +320,7 @@
     .catalog-card:hover .thumb-wrap::after { transform: translateX(120%); transition: transform 0.8s ease; }
     .badge {
       position: absolute; top: 10px; left: 10px; z-index: 2; padding: 4px 10px; border-radius: 999px;
-      background: rgba(19,8,33,0.72); border: 1px solid var(--glass-border);
+      background: rgba(26,15,10,0.72); border: 1px solid var(--glass-border);
       backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
       font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold-soft);
     }
@@ -368,7 +368,7 @@
     /* Product modal */
     #productModal {
       position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center;
-      padding: 20px; background: rgba(8,3,15,0.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      padding: 20px; background: rgba(12,6,3,0.82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       opacity: 0; pointer-events: none; transition: opacity .3s ease;
     }
     #productModal.show { opacity: 1; pointer-events: auto; }
@@ -389,7 +389,7 @@
     .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
     .modal-close {
       position: absolute; top: 12px; right: 12px; z-index: 3; width: 38px; height: 38px; border-radius: 50%;
-      border: 1px solid var(--glass-border); background: rgba(19,8,33,0.8); color: var(--gold-soft);
+      border: 1px solid var(--glass-border); background: rgba(26,15,10,0.8); color: var(--gold-soft);
       font-size: 18px; cursor: pointer;
     }
 
@@ -414,7 +414,7 @@
       position: fixed; left: 50%; bottom: max(90px, calc(env(safe-area-inset-bottom) + 70px));
       transform: translateX(-50%) translateY(16px); z-index: 99998;
       padding: 10px 20px; border-radius: 999px;
-      background: rgba(19, 8, 33, 0.92); border: 1px solid var(--gold);
+      background: rgba(26, 15, 10, 0.92); border: 1px solid var(--gold);
       color: var(--gold-soft); font-size: 12px; font-weight: 600; letter-spacing: 1.5px;
       text-transform: uppercase; opacity: 0; pointer-events: none;
       transition: opacity .25s ease, transform .25s ease;
@@ -441,13 +441,18 @@
   <video id="rawCameraFeed" autoplay playsinline muted></video>
 
   <div id="blackCurtain">
+    <!-- Chocolate bar loader -->
     <svg class="gem-loader" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
-      <path d="M28 4 L48 20 L28 52 L8 20 Z M8 20 L48 20 M18 20 L28 4 L38 20 M18 20 L28 52 M38 20 L28 52" />
+      <path d="M10 6 H46 Q50 6 50 10 V46 Q50 50 46 50 H10 Q6 50 6 46 V10 Q6 6 10 6 Z" />
+      <line x1="6" y1="22" x2="50" y2="22" />
+      <line x1="6" y1="36" x2="50" y2="36" />
+      <line x1="22" y1="6" x2="22" y2="50" />
+      <line x1="36" y1="6" x2="36" y2="50" />
     </svg>
     <div id="loader">Initializing<span>Camera &amp; AR</span></div>
   </div>
 
-  <div id="brandMark">JEWELS·AI</div>
+  <div id="brandMark">CHOCO·AI</div>
 
   <div id="scanHint">
     <div class="corner tl"></div><div class="corner tr"></div>
@@ -456,7 +461,7 @@
     <p>Align with drive card</p>
   </div>
 
-  <button class="plan-button" id="openCatalogBtn">📖 Catalog</button>
+  <button class="plan-button" id="openCatalogBtn">🍫 Catalog</button>
 
   <div class="video-panel" id="videoControls">
     <button class="plan-button" id="toggleButton">▶ Play Video</button>
@@ -469,7 +474,7 @@
       <!-- Navbar -->
       <header class="site-nav">
         <div class="container nav-inner">
-          <div class="nav-logo">JEWELS·AI</div>
+          <div class="nav-logo">CHOCO·AI</div>
           <nav class="nav-links">
             <a data-scroll="top">Home</a>
             <a data-scroll="collection">Collection</a>
@@ -479,29 +484,29 @@
           <div class="nav-spacer"></div>
           <div class="nav-search">
             <span class="search-icon">🔍</span>
-            <input type="search" id="searchInput" placeholder="Search jewellery…" autocomplete="off" />
+            <input type="search" id="searchInput" placeholder="Search chocolates…" autocomplete="off" />
           </div>
           <button class="close-btn" id="closeCatalogBtn" aria-label="Close catalog">✕ <span>Close</span></button>
         </div>
         <div class="mobile-search">
           <span class="search-icon">🔍</span>
-          <input type="search" id="searchInputMobile" placeholder="Search jewellery…" autocomplete="off" />
+          <input type="search" id="searchInputMobile" placeholder="Search chocolates…" autocomplete="off" />
         </div>
       </header>
 
       <!-- Hero -->
       <section class="hero" id="catTop">
         <div class="container">
-          <div class="eyebrow">Fine Jewellery · Handcrafted</div>
+          <div class="eyebrow">Fine Chocolates · Handcrafted</div>
           <h1>The Collection</h1>
-          <p>Timeless bridal sets, statement necklaces, elegant bangles and rings — explore our latest pieces, updated live.</p>
+          <p>Gift boxes, classic homemade favourites, gourmet flavours, nutty delights and luxury creations — explore our latest chocolates, updated live.</p>
           <div class="hero-cta">
             <button class="btn-gold" id="heroBrowse">Browse Collection</button>
-            <button class="btn-ghost" id="heroBridal">Bridal Edit</button>
+            <button class="btn-ghost" id="heroPremium">Premium Edit</button>
           </div>
           <div class="hero-stats">
-            <div class="stat"><b id="statTotal">—</b><span>Designs</span></div>
-            <div class="stat"><b>4</b><span>Categories</span></div>
+            <div class="stat"><b id="statTotal">—</b><span>Treats</span></div>
+            <div class="stat"><b>5</b><span>Categories</span></div>
             <div class="stat"><b>AR</b><span>Try &amp; View</span></div>
           </div>
         </div>
@@ -511,7 +516,7 @@
       <section id="catCollection">
         <div class="container">
           <div class="section-head">
-            <h2 class="section-title"><small>Our Pieces</small>Shop the Collection</h2>
+            <h2 class="section-title"><small>Our Treats</small>Shop the Collection</h2>
           </div>
         </div>
 
@@ -519,10 +524,11 @@
           <div class="container toolbar-inner">
             <div class="category-scroll" id="categoryTabs">
               <button class="category-chip active" data-cat="all">All<span class="count" id="cnt-all"></span></button>
-              <button class="category-chip" data-cat="bridal">Bridal<span class="count" id="cnt-bridal"></span></button>
-              <button class="category-chip" data-cat="necklaces">Necklaces<span class="count" id="cnt-necklaces"></span></button>
-              <button class="category-chip" data-cat="bangles">Bangles<span class="count" id="cnt-bangles"></span></button>
-              <button class="category-chip" data-cat="rings">Rings<span class="count" id="cnt-rings"></span></button>
+              <button class="category-chip" data-cat="gift">Gift &amp; Souvenir<span class="count" id="cnt-gift"></span></button>
+              <button class="category-chip" data-cat="classic">Classic Homemade<span class="count" id="cnt-classic"></span></button>
+              <button class="category-chip" data-cat="flavoured">Flavoured &amp; Gourmet<span class="count" id="cnt-flavoured"></span></button>
+              <button class="category-chip" data-cat="nuts">Nuts &amp; Dry Fruit<span class="count" id="cnt-nuts"></span></button>
+              <button class="category-chip" data-cat="premium">Premium &amp; Luxury<span class="count" id="cnt-premium"></span></button>
             </div>
             <label class="sort-wrap">Sort
               <select id="sortSelect">
@@ -543,8 +549,8 @@
       <!-- Promise -->
       <section class="promise" id="catPromise">
         <div class="container promise-grid">
-          <div class="promise-item"><div class="ic">💎</div><h4>Certified Quality</h4><p>Every piece is crafted with care and verified for purity.</p></div>
-          <div class="promise-item"><div class="ic">✨</div><h4>Exclusive Designs</h4><p>Contemporary and traditional styles you won't find elsewhere.</p></div>
+          <div class="promise-item"><div class="ic">🍫</div><h4>Finest Ingredients</h4><p>Every chocolate is made with carefully selected cocoa and fresh ingredients.</p></div>
+          <div class="promise-item"><div class="ic">🎁</div><h4>Gifts for Every Occasion</h4><p>Beautiful boxes and souvenirs for celebrations, festivals and special moments.</p></div>
           <div class="promise-item"><div class="ic">📱</div><h4>AR Experience</h4><p>Scan the drive card to see our latest showcase come alive.</p></div>
         </div>
       </section>
@@ -552,14 +558,15 @@
       <!-- Footer -->
       <footer class="site-footer" id="catContact">
         <div class="container">
-          <div class="logo">JEWELS·AI</div>
+          <div class="logo">CHOCO·AI</div>
           <div class="footer-links">
-            <a data-cat-link="bridal">Bridal</a>
-            <a data-cat-link="necklaces">Necklaces</a>
-            <a data-cat-link="bangles">Bangles</a>
-            <a data-cat-link="rings">Rings</a>
+            <a data-cat-link="gift">Gift &amp; Souvenir</a>
+            <a data-cat-link="classic">Classic</a>
+            <a data-cat-link="flavoured">Gourmet</a>
+            <a data-cat-link="nuts">Nuts &amp; Dry Fruit</a>
+            <a data-cat-link="premium">Premium</a>
           </div>
-          <p>© <span id="yr"></span> JEWELS·AI · All rights reserved</p>
+          <p>© <span id="yr"></span> CHOCO·AI · All rights reserved</p>
         </div>
       </footer>
     </div>
@@ -573,7 +580,7 @@
       <div class="modal-info">
         <div class="cat" id="modalCat"></div>
         <h2 id="modalName"></h2>
-        <p>A beautifully crafted piece from our collection. Visit the store or contact us to enquire about availability, customisation and pricing.</p>
+        <p>A delicious treat from our chocolate collection. Visit the store or contact us to enquire about availability, gift packing, customisation and pricing.</p>
         <div class="modal-actions">
           <button class="btn-gold" id="modalEnquire">Enquire Now</button>
           <button class="btn-ghost" id="modalBack">Keep Browsing</button>
@@ -610,17 +617,32 @@
        CONFIGURATION
     ====================================================== */
     const API_KEY = "AIzaSyA_mBu6emRKASkqHpLtwkdBiCQKYO3rvcw";
+
+    // Folder the live AR video is pulled from (latest video in this folder).
+    // Change this if your chocolate video lives in the main CHOCOLATES folder:
+    // "1-rZcTACRtNLaHasgmgq2FBfPLLQ1GSTn"
     const FOLDER_ID = "1jRyVReP4cq7yk1VqwdFCMt0w4on4S77Q";
 
-    // Optional: put your WhatsApp number with country code (e.g. "919876543210").
+    // Optional: WhatsApp number with country code (e.g. "919876543210").
     // If left empty, the "Enquire Now" button just closes the popup.
     const WHATSAPP_NUMBER = "";
 
+    // Category key -> Drive folder ID
     const CATALOG_FOLDERS = {
-      bangles: "1loeb_40A3eOjzB2PnY24MXsxKFsE06L-",
-      bridal: "1RQJWVfvRpvcQw_DdhWxZKB18-GzKoD3B",
-      necklaces: "1Zmg8bnpmOChwqwrVWFeBCvXxOEQihC3Q",
-      rings: "1Xz92BSq1jtdxJyiKO5o7lzx0bepnDQzz"
+      gift:      "17ySewgdqCobAmmA2GJQr26dTOZ2_i_QP",
+      classic:   "1MNyNI74BCiWLIYlLa47_rdNOk9VyPAv6",
+      flavoured: "1W3asJarlw4jzVYxiHH3572tR34qqZrrl",
+      nuts:      "1nKxR0fYLYx7_NE068EbglJLVyOJ6Uc4L",
+      premium:   "1Dmdcl3emFUjStD4-fQczCHly_SXxnI46"
+    };
+
+    // Category key -> display name
+    const CATEGORY_LABELS = {
+      gift:      "Gift & Souvenir",
+      classic:   "Classic Homemade",
+      flavoured: "Flavoured & Gourmet",
+      nuts:      "Nuts & Dry Fruit",
+      premium:   "Premium & Luxury"
     };
 
     let CATALOG_ITEMS = [];
@@ -649,10 +671,10 @@
     ====================================================== */
     async function fetchDriveCatalog() {
       const items = [];
-      const fetchPromises = Object.entries(CATALOG_FOLDERS).map(async ([catName, folderId]) => {
+      const fetchPromises = Object.entries(CATALOG_FOLDERS).map(async ([catKey, folderId]) => {
         try {
           const query = encodeURIComponent(`'${folderId}' in parents and mimeType contains 'image/' and trashed=false`);
-          const url = `https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id,name)&pageSize=30&key=${API_KEY}`;
+          const url = `https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id,name)&pageSize=100&key=${API_KEY}`;
           const res = await fetch(url);
           const data = await res.json();
 
@@ -662,14 +684,15 @@
               items.push({
                 id: file.id,
                 name: cleanTitle,
-                category: catName,
+                category: catKey,
+                categoryLabel: CATEGORY_LABELS[catKey],
                 img: `https://drive.google.com/thumbnail?id=${file.id}&sz=w800`,
                 imgLarge: `https://drive.google.com/thumbnail?id=${file.id}&sz=w1600`
               });
             });
           }
         } catch (err) {
-          console.error(`Error loading category: ${catName}`, err);
+          console.error(`Error loading category: ${catKey}`, err);
         }
       });
 
@@ -790,7 +813,8 @@
       }
 
       function updateCounts() {
-        const counts = { all: CATALOG_ITEMS.length, bridal: 0, necklaces: 0, bangles: 0, rings: 0 };
+        const counts = { all: CATALOG_ITEMS.length };
+        Object.keys(CATALOG_FOLDERS).forEach(k => counts[k] = 0);
         CATALOG_ITEMS.forEach(i => { if (counts[i.category] !== undefined) counts[i.category]++; });
         Object.entries(counts).forEach(([k, v]) => {
           const el = document.querySelector("#cnt-" + k);
@@ -803,7 +827,7 @@
         let list = activeCat === "all" ? [...CATALOG_ITEMS] : CATALOG_ITEMS.filter(i => i.category === activeCat);
         if (searchTerm) {
           const q = searchTerm.toLowerCase();
-          list = list.filter(i => i.name.toLowerCase().includes(q) || i.category.toLowerCase().includes(q));
+          list = list.filter(i => i.name.toLowerCase().includes(q) || i.categoryLabel.toLowerCase().includes(q));
         }
         if (sortMode === "az") list.sort((a, b) => a.name.localeCompare(b.name));
         if (sortMode === "za") list.sort((a, b) => b.name.localeCompare(a.name));
@@ -814,11 +838,11 @@
         const items = getVisibleItems();
         catalogList.innerHTML = "";
         resultLine.textContent = items.length
-          ? `Showing ${items.length} piece${items.length === 1 ? "" : "s"}`
+          ? `Showing ${items.length} chocolate${items.length === 1 ? "" : "s"}`
           : "";
 
         if (items.length === 0) {
-          catalogList.innerHTML = `<div class="catalog-empty">No pieces found. Try a different search or category.</div>`;
+          catalogList.innerHTML = `<div class="catalog-empty">No chocolates found. Try a different search or category.</div>`;
           return;
         }
 
@@ -828,7 +852,7 @@
           card.style.animationDelay = Math.min(i * 45, 450) + "ms";
           card.innerHTML = `
             <div class="thumb-wrap">
-              <span class="badge">${escapeHTML(item.category)}</span>
+              <span class="badge">${escapeHTML(item.categoryLabel)}</span>
               <img src="${item.img}" alt="${escapeHTML(item.name)}" loading="lazy" referrerpolicy="no-referrer" />
             </div>
             <div class="card-body">
@@ -858,7 +882,7 @@
         modalImg.src = item.imgLarge;
         modalImg.alt = item.name;
         modalName.textContent = item.name;
-        modalCat.textContent = item.category;
+        modalCat.textContent = item.categoryLabel;
         productModal.classList.add("show");
         productModal.setAttribute("aria-hidden", "false");
       }
@@ -871,7 +895,7 @@
       productModal.addEventListener("click", (e) => { if (e.target === productModal) closeProduct(); });
       document.querySelector("#modalEnquire").addEventListener("click", () => {
         if (WHATSAPP_NUMBER && currentProduct) {
-          const msg = encodeURIComponent(`Hi, I'm interested in "${currentProduct.name}" (${currentProduct.category}).`);
+          const msg = encodeURIComponent(`Hi, I'm interested in "${currentProduct.name}" (${currentProduct.categoryLabel}).`);
           window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank", "noopener");
         } else {
           closeProduct();
@@ -890,7 +914,7 @@
         a.addEventListener("click", () => setCategory(a.dataset.catLink, true));
       });
       document.querySelector("#heroBrowse").addEventListener("click", () => scrollToSection("catCollection"));
-      document.querySelector("#heroBridal").addEventListener("click", () => setCategory("bridal", true));
+      document.querySelector("#heroPremium").addEventListener("click", () => setCategory("premium", true));
 
       categoryTabs.forEach(chip => chip.addEventListener("click", () => setCategory(chip.dataset.cat, false)));
 
