@@ -301,17 +301,60 @@ $("selAll").onclick=()=>{
   if(picked.size===items.length)picked.clear();else items.forEach(f=>picked.add(f.id));
   renderThumbs();updateDelBtn();
 };
-delBtn.onclick=async()=>{
-  const n=picked.size;if(!n)return;
-  if(!confirm(`Delete ${n} product image(s) from "${curCat}"? They will be moved to the Drive Trash.`))return;
-  delBtn.disabled=true;delStatus.textContent="Deleting…";
-  try{
-    const r=await post({action:"deleteProductImages",folderId:FOLDERS[curCat],fileIds:[...picked]});
-    if(!r.success)throw new Error(r.error||"Delete failed.");
-    items=items.filter(f=>!picked.has(f.id));picked.clear();renderThumbs();updateDelBtn();
-    delStatus.textContent=`✓ ${n} product image(s) deleted.`;
-  }catch(err){console.error(err);delStatus.textContent="Delete failed: "+err.message;updateDelBtn()}
+
+delBtn.onclick = async () => {
+  const ids = [...picked];
+  if (!ids.length) return;
+
+  if (!confirm(
+    `Delete ${ids.length} product image(s) from "${curCat}"?`
+  )) return;
+
+  delBtn.disabled = true;
+  delStatus.textContent = "Deleting products...";
+
+  try {
+    const r = await post({
+      action: "deleteProductImages",
+      folderId: FOLDERS[curCat],
+      fileIds: ids
+    });
+
+    if (!r.success) {
+      throw new Error(r.error || "Delete failed.");
+    }
+
+    const deletedIds = r.deletedIds || [];
+
+    // Remove only files confirmed as deleted.
+    items = items.filter(f => !deletedIds.includes(f.id));
+
+    picked.clear();
+    renderThumbs();
+    updateDelBtn();
+
+    if (r.deleted > 0) {
+      delStatus.textContent =
+        `✓ ${r.deleted} image(s) deleted from Drive. ` +
+        `${r.sheetRowsDeleted || 0} spreadsheet row(s) removed.`;
+    } else {
+      delStatus.textContent =
+        "No files were deleted. Check folder permissions and file IDs.";
+    }
+
+    if (r.skipped?.length || r.errors?.length) {
+      console.error("Deletion details:", r);
+      delStatus.textContent +=
+        ` ${r.skipped.length} skipped, ${r.errors.length} error(s).`;
+    }
+
+  } catch (err) {
+    console.error(err);
+    delStatus.textContent = "Delete failed: " + err.message;
+    updateDelBtn();
+  }
 };
+
 </script>
 </body>
 </html>
