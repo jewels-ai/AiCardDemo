@@ -504,6 +504,37 @@
     .category-chip:hover { border-color: var(--gold); }
     .category-chip.active { background: transparent; color: #1a0f0a; border-color: transparent; font-weight: 700; }
     .category-chip.fav-chip.active { color: #fff; }
+    .category-chip .cat-icon { display: none; }
+
+    /* Compact icon category navigation for phones */
+    @media (max-width: 767px) {
+      .toolbar { padding: 8px 0 10px; }
+      .toolbar-inner { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+      .category-scroll {
+        width: 100%; gap: 9px; padding: 4px 2px 7px;
+        overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity;
+      }
+      .category-chip {
+        flex: 0 0 48px; width: 48px; height: 48px; padding: 0;
+        display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 1px; border-radius: 15px; scroll-snap-align: start;
+      }
+      .category-chip .cat-icon {
+        display: block; font-size: 20px; line-height: 1.15;
+      }
+      .category-chip .cat-label { display: none; }
+      .category-chip .count {
+        position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px;
+        margin: 0; padding: 0 4px; display: grid; place-items: center;
+        border-radius: 999px; background: var(--deep-2); border: 1px solid var(--gold);
+        color: var(--gold-soft); font-size: 9px; line-height: 1;
+      }
+      .category-chip.active .count { background: var(--gold-soft); color: var(--deep); }
+      .toolbar-right { justify-content: flex-end; gap: 8px; }
+      #viewToggleBtn { width: 38px; height: 38px; padding: 0; }
+      .chip-slider { top: 4px; bottom: 7px; border-radius: 15px; }
+    }
 
     .toolbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
     .sort-wrap { display: none; align-items: center; gap: 6px; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--cream-dim); }
@@ -942,13 +973,27 @@
           <div class="container toolbar-inner">
             <div class="category-scroll" id="categoryTabs">
               <span class="chip-slider" id="chipSlider"></span>
-              <button class="category-chip active" data-cat="all"><span data-i18n="catAll">All</span><span class="count" id="cnt-all"></span></button>
-              <button class="category-chip fav-chip" data-cat="fav">♥ <span data-i18n="catFav">Favourites</span><span class="count" id="cnt-fav">0</span></button>
-              <button class="category-chip" data-cat="gift"><span data-i18n="catGift">Gift &amp; Souvenir</span><span class="count" id="cnt-gift"></span></button>
-              <button class="category-chip" data-cat="classic"><span data-i18n="catClassic">Classic Homemade</span><span class="count" id="cnt-classic"></span></button>
-              <button class="category-chip" data-cat="flavoured"><span data-i18n="catFlavoured">Flavoured &amp; Gourmet</span><span class="count" id="cnt-flavoured"></span></button>
-              <button class="category-chip" data-cat="nuts"><span data-i18n="catNuts">Nuts &amp; Dry Fruit</span><span class="count" id="cnt-nuts"></span></button>
-              <button class="category-chip" data-cat="premium"><span data-i18n="catPremium">Premium &amp; Luxury</span><span class="count" id="cnt-premium"></span></button>
+              <button class="category-chip active" data-cat="all" title="All products" aria-label="All products">
+                <span class="cat-icon" aria-hidden="true">▦</span><span class="cat-label" data-i18n="catAll">All</span><span class="count" id="cnt-all"></span>
+              </button>
+              <button class="category-chip fav-chip" data-cat="fav" title="Favourites" aria-label="Favourites">
+                <span class="cat-icon" aria-hidden="true">♥</span><span class="cat-label" data-i18n="catFav">Favourites</span><span class="count" id="cnt-fav">0</span>
+              </button>
+              <button class="category-chip" data-cat="gift" title="Gift &amp; Souvenir" aria-label="Gift and Souvenir">
+                <span class="cat-icon" aria-hidden="true">🎁</span><span class="cat-label" data-i18n="catGift">Gift &amp; Souvenir</span><span class="count" id="cnt-gift"></span>
+              </button>
+              <button class="category-chip" data-cat="classic" title="Classic Homemade" aria-label="Classic Homemade">
+                <span class="cat-icon" aria-hidden="true">🍫</span><span class="cat-label" data-i18n="catClassic">Classic Homemade</span><span class="count" id="cnt-classic"></span>
+              </button>
+              <button class="category-chip" data-cat="flavoured" title="Flavoured &amp; Gourmet" aria-label="Flavoured and Gourmet">
+                <span class="cat-icon" aria-hidden="true">☕</span><span class="cat-label" data-i18n="catFlavoured">Flavoured &amp; Gourmet</span><span class="count" id="cnt-flavoured"></span>
+              </button>
+              <button class="category-chip" data-cat="nuts" title="Nuts &amp; Dry Fruit" aria-label="Nuts and Dry Fruit">
+                <span class="cat-icon" aria-hidden="true">🌰</span><span class="cat-label" data-i18n="catNuts">Nuts &amp; Dry Fruit</span><span class="count" id="cnt-nuts"></span>
+              </button>
+              <button class="category-chip" data-cat="premium" title="Premium &amp; Luxury" aria-label="Premium and Luxury">
+                <span class="cat-icon" aria-hidden="true">♛</span><span class="cat-label" data-i18n="catPremium">Premium &amp; Luxury</span><span class="count" id="cnt-premium"></span>
+              </button>
             </div>
             <div class="toolbar-right">
               <button class="icon-pill" id="viewToggleBtn" title="Toggle Grid / List View" aria-label="Toggle View">☰</button>
