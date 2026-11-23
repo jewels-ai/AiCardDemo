@@ -720,21 +720,7 @@
     }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* Offline Fallback & PWA Banner */
-    #offlineOverlay { z-index: 98000; }
-    #pwaBanner {
-      position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom));
-      transform: translateX(-50%) translateY(120%); z-index: 2300;
-      width: min(92vw, 420px); padding: 12px 14px; border-radius: 16px;
-      background: var(--glass-strong); border: 1px solid var(--gold);
-      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      display: flex; align-items: center; justify-content: space-between; gap: 10px;
-      box-shadow: 0 14px 36px rgba(0,0,0,0.45); transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
-    }
-    #pwaBanner.show { transform: translateX(-50%) translateY(0); }
-    #pwaBanner .pwa-txt { font-size: 12px; line-height: 1.4; color: var(--cream); }
-    #pwaBanner .pwa-txt b { color: var(--gold-soft); display: block; font-size: 13px; }
-
+   
     @media (min-width: 768px) {
       .nav-links, .sort-wrap { display: flex; }
       .nav-search { display: block; }
@@ -770,7 +756,7 @@
 
   <!-- Loading Curtain -->
   <div id="blackCurtain">
-    <div class="choco-bar"><div class="choco-fill" id="chocoFill"></div></div>
+    
     <div id="loader"><strong id="loaderText" style="font-weight:inherit">Warming camera…</strong><span data-i18n="cameraAr">Camera &amp; AR</span></div>
   </div>
 
@@ -1006,15 +992,7 @@
 
     <button id="backToTop" aria-label="Back to top">↑</button>
 
-    <!-- PWA Install Banner -->
-    <div id="pwaBanner">
-      <div class="pwa-txt"><b data-i18n="installTitle">Install CHOCO·AI</b><span data-i18n="installDesc">Add to Home Screen for instant AR &amp; catalog access.</span></div>
-      <div style="display:flex;gap:6px;">
-        <button class="btn-gold" id="pwaInstallBtn" style="padding:8px 14px;font-size:11px;" data-i18n="installBtn">Install</button>
-        <button class="icon-pill" id="pwaDismissBtn" aria-label="Dismiss">✕</button>
-      </div>
-    </div>
-  </div>
+    
 
   <!-- Product Detail Modal -->
   <div id="productModal" aria-hidden="true">
@@ -1171,7 +1149,7 @@
         camDeniedTitle: "Camera Access Needed", camDeniedDesc: "Tap the lock icon in your browser's address bar, allow Camera permissions, and tap Retry. You can still browse the Catalog below.",
         retry: "Retry", browseCatalog: "Open Catalog",
         offlineTitle: "You're Offline", offlineDesc: "Connect to the internet to sync the latest chocolates and AR video from Drive.",
-        installTitle: "Install CHOCO·AI", installDesc: "Add to Home Screen for instant AR & catalog access.", installBtn: "Install",
+       
         greetMorning: "Good morning, start sweet ☀️", greetAfternoon: "Good afternoon, time for a treat 🍫", greetEvening: "Good evening, treat yourself ✨",
         searchPh: "Search chocolates…", viewDetails: "View details",
         emptyFav: "No favourites yet — tap the ♥ on any chocolate to save it.",
@@ -1357,29 +1335,7 @@
       try { localStorage.setItem(RECENT_KEY, JSON.stringify(RECENT)); } catch (e) {}
     }
 
-    /* ======================================================
-       DYNAMIC PWA MANIFEST
-    ====================================================== */
-    (function setupPWA() {
-      try {
-        const manifest = {
-          name: "CHOCO·AI Live AR & Catalog",
-          short_name: "CHOCO·AI",
-          start_url: location.href,
-          display: "standalone",
-          background_color: "#1a0f0a",
-          theme_color: "#D4AF37",
-          icons: [{
-            src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="36" fill="#1a0f0a"/><text x="96" y="122" font-size="96" text-anchor="middle">🍫</text></svg>'),
-            sizes: "192x192", type: "image/svg+xml"
-          }]
-        };
-        const blob = new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" });
-        const link = document.createElement("link");
-        link.rel = "manifest"; link.href = URL.createObjectURL(blob);
-        document.head.appendChild(link);
-      } catch (e) {}
-    })();
+   
 
     /* ======================================================
        LIVE DRIVE VIDEO & CATALOG SYNC (WITH GALLERY GROUPING)
@@ -1658,27 +1614,7 @@
       });
       syncOnline();
 
-      /* ---------- PWA Install Prompt ---------- */
-      let deferredPrompt = null;
-      const pwaBanner = document.querySelector("#pwaBanner");
-      window.addEventListener("beforeinstallprompt", (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        if (!localStorage.getItem("chocoai_pwa_dismissed")) {
-          setTimeout(() => pwaBanner.classList.add("show"), 2500);
-        }
-      });
-      document.querySelector("#pwaInstallBtn").addEventListener("click", async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        pwaBanner.classList.remove("show");
-      });
-      document.querySelector("#pwaDismissBtn").addEventListener("click", () => {
-        pwaBanner.classList.remove("show");
-        localStorage.setItem("chocoai_pwa_dismissed", "1");
-      });
+    
 
       /* ---------- Staged Loading Bar ---------- */
       const fillEl = document.querySelector("#chocoFill");
