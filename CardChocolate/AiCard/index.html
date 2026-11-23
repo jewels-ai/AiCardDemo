@@ -1571,14 +1571,13 @@
       const modalCard = document.querySelector(".modal-card");
       const modalImgWrap = document.querySelector("#modalImgWrap");
       const modalImg = document.querySelector("#modalImg");
-      const galleryDots = document.querySelector("#galleryDots");
       const modalName = document.querySelector("#modalName");
       const modalCat = document.querySelector("#modalCat");
       const modalFav = document.querySelector("#modalFav");
 
       let isPlaying = false, catalogTransitioning = false, currentLoadedFileId = null;
       let activeCat = "all", searchTerm = "", sortMode = "default", currentProduct = null;
-      let galleryIdx = 0, lostTimer = null, hasFoundOnce = false;
+      let lostTimer = null, hasFoundOnce = false;
       let bubbleCategory = "flavoured";
 
       document.querySelector("#yr").textContent = new Date().getFullYear();
@@ -2046,32 +2045,21 @@
         if (el) catalogSheet.scrollTo({ top: el.offsetTop - 64, behavior: "smooth" });
       }
 
-      /* ---------- Product Modal: Gallery, Pinch-Zoom, Share, Related ---------- */
-      let imgScale = 1, pinchStartDist = 0, lastTap = 0;
+      /* ---------- Compact Product Enquiry Popup ---------- */
+      let imgScale = 1;
       function resetZoom() { imgScale = 1; modalImg.style.transform = ""; }
-
-      function setGalleryIndex(idx) {
-        if (!currentProduct) return;
-        const g = currentProduct.gallery;
-        galleryIdx = (idx + g.length) % g.length;
-        modalImg.src = g[galleryIdx];
-        resetZoom();
-        galleryDots.querySelectorAll(".gallery-dot").forEach((d, i) => d.classList.toggle("active", i === galleryIdx));
-      }
 
       function openProduct(item) {
         currentProduct = item;
-        galleryIdx = 0;
         addRecent(item.id);
         renderRecent();
 
         modalCard.style.transform = "";
         resetZoom();
-        const productImage = item.imgLarge || item.img || (item.gallery && item.gallery[0]) || "";
+        const productImage = item.imgLarge || item.img || (Array.isArray(item.gallery) ? item.gallery[0] : "") || "";
         modalImg.src = productImage;
         modalImg.alt = item.name;
         modalName.textContent = item.name;
-        galleryDots.style.display = "none";
 
         productModal.classList.add("show");
         productModal.setAttribute("aria-hidden", "false");
@@ -2086,45 +2074,6 @@
         setTimeout(() => { modalCard.style.transform = ""; productModal.style.background = ""; }, 400);
       }
 
-      // Pinch-to-zoom, Double-tap zoom & Horizontal Gallery Swipe
-      let galSwipeX = 0;
-      modalImgWrap.addEventListener("touchstart", (e) => {
-        if (e.touches.length === 2) {
-          pinchStartDist = Math.hypot(
-            e.touches[0].clientX - e.touches[1].clientX,
-            e.touches[0].clientY - e.touches[1].clientY
-          );
-        } else if (e.touches.length === 1) {
-          galSwipeX = e.touches[0].clientX;
-          const now = Date.now();
-          if (now - lastTap < 280) {
-            imgScale = imgScale > 1 ? 1 : 2.1;
-            modalImg.style.transform = `scale(${imgScale})`;
-          }
-          lastTap = now;
-        }
-      }, { passive: true });
-
-      modalImgWrap.addEventListener("touchmove", (e) => {
-        if (e.touches.length === 2 && pinchStartDist > 0) {
-          const dist = Math.hypot(
-            e.touches[0].clientX - e.touches[1].clientX,
-            e.touches[0].clientY - e.touches[1].clientY
-          );
-          imgScale = Math.max(1, Math.min(3, (dist / pinchStartDist) * imgScale));
-          pinchStartDist = dist;
-          modalImg.style.transform = `scale(${imgScale.toFixed(2)})`;
-        }
-      }, { passive: true });
-
-      modalImgWrap.addEventListener("touchend", (e) => {
-        if (e.touches.length < 2) pinchStartDist = 0;
-        if (imgScale <= 1.05 && currentProduct && currentProduct.gallery.length > 1 && e.changedTouches.length === 1) {
-          const dx = e.changedTouches[0].clientX - galSwipeX;
-          if (Math.abs(dx) > 45) setGalleryIndex(galleryIdx + (dx < 0 ? 1 : -1));
-        }
-      }, { passive: true });
-
       document.querySelector("#modalClose").addEventListener("click", closeProduct);
       productModal.addEventListener("click", (e) => { if (e.target === productModal) closeProduct(); });
       modalFav.addEventListener("click", (e) => {
@@ -2132,24 +2081,6 @@
         const gridHeart = catalogList.querySelector(`.heart[data-id="${currentProduct.id}"]`);
         toggleFav(currentProduct.id, gridHeart, e.clientX, e.clientY);
         if (FAVS.has(currentProduct.id)) burstHeart(modalFav);
-      });
-
-      // Web Share API
-      document.querySelector("#modalShare").addEventListener("click", async () => {
-        if (!currentProduct) return;
-        const shareData = {
-          title: `CHOCO·AI — ${currentProduct.name}`,
-          text: `Check out "${currentProduct.name}" (${currentProduct.categoryLabel}) on CHOCO·AI!`,
-          url: location.href
-        };
-        try {
-          if (navigator.share) {
-            await navigator.share(shareData);
-          } else if (navigator.clipboard) {
-            await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
-            showToast("Link copied to clipboard", "📋");
-          }
-        } catch (e) {}
       });
 
       // Ask Price: open WhatsApp with the selected product name and image link.
@@ -2164,7 +2095,7 @@
           `Category: ${currentProduct.categoryLabel || "Chocolate"}`,
           "I'd like to know the price and availability, please.",
           imageUrl ? `Product image: ${imageUrl}` : ""
-        ].filter(Boolean).join("\\n");
+        ].filter(Boolean).join("\n");
 
         buzz([20, 40, 20]);
         const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
@@ -2174,7 +2105,7 @@
       // Swipe-down to close modal (disabled while zoomed)
       let swipeStartY = 0, swipeDY = 0, swiping = false;
       modalCard.addEventListener("touchstart", (e) => {
-        if (modalCard.scrollTop > 0 || imgScale > 1.05 || e.touches.length > 1) { swiping = false; return; }
+        if (modalCard.scrollTop > 0 || e.touches.length > 1) { swiping = false; return; }
         swipeStartY = e.touches[0].clientY; swipeDY = 0; swiping = true;
       }, { passive: true });
       modalCard.addEventListener("touchmove", (e) => {
