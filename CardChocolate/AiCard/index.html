@@ -697,6 +697,45 @@
       border: 1px solid var(--glass-border); background: var(--glass-strong); color: var(--gold-soft); font-size: 18px; cursor: pointer;
     }
 
+    /* Compact chocolate product popup */
+    .product-enquiry-card {
+      display: flex !important; flex-direction: column; width: min(88vw, 390px);
+      max-width: 390px; max-height: 86dvh; overflow: hidden;
+      border-radius: 22px; padding: 10px; gap: 0;
+      box-shadow: 0 24px 70px rgba(0,0,0,.58);
+    }
+    .product-enquiry-card .modal-img {
+      width: 100%; height: min(48dvh, 390px); min-height: 190px;
+      aspect-ratio: 1 / 1; border-radius: 15px; overflow: hidden;
+      background: rgba(128,90,60,.12);
+    }
+    .product-enquiry-card .modal-img img {
+      object-fit: contain; padding: 4px;
+    }
+    .product-enquiry-card .modal-info {
+      padding: 14px 5px 5px; gap: 14px; text-align: center;
+    }
+    .product-enquiry-card .modal-info h2 {
+      font-size: clamp(23px, 6vw, 29px); line-height: 1.15;
+    }
+    .product-enquiry-card .modal-actions {
+      display: grid; grid-template-columns: 1.35fr 1fr; gap: 10px; margin: 0;
+    }
+    .product-enquiry-card #modalEnquire {
+      background: linear-gradient(135deg, #D4AF37, #F0D687);
+      color: #1a0f0a; border: 0; min-height: 46px;
+    }
+    .product-enquiry-card #modalFav { min-height: 46px; }
+    .product-enquiry-card .modal-close {
+      top: 16px; right: 16px; background: rgba(26,15,10,.82);
+      color: #F0D687; border-color: rgba(240,214,135,.65);
+    }
+    @media (min-width: 768px) {
+      .product-enquiry-card { width: 390px; }
+      .product-enquiry-card .modal-img { min-height: 0; height: 330px; }
+      .product-enquiry-card .modal-info { padding: 14px 5px 5px; }
+    }
+
     /* Related Treats Row in Modal */
     .modal-related {
       grid-column: 1 / -1; padding: 16px 22px 22px; border-top: 1px solid var(--glass-border);
@@ -1041,29 +1080,19 @@
 
   </div>
 
-  <!-- Product Detail Modal -->
+  <!-- Compact Product Enquiry Popup -->
   <div id="productModal" aria-hidden="true">
-    <div class="modal-card" role="dialog" aria-modal="true">
-      <div class="grabber"><i></i><small data-i18n="swipeClose">Swipe down to close</small></div>
+    <div class="modal-card product-enquiry-card" role="dialog" aria-modal="true" aria-label="Product enquiry">
       <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
       <div class="modal-img" id="modalImgWrap">
-        <span class="zoom-hint" data-i18n="pinchZoom">Pinch / Double-tap to zoom</span>
         <img id="modalImg" alt="" />
-        <div class="gallery-dots" id="galleryDots" style="display:none;"></div>
       </div>
       <div class="modal-info">
-        <div class="cat" id="modalCat"></div>
         <h2 id="modalName"></h2>
-        <p data-i18n="modalDesc">A delicious treat from our chocolate collection. Visit the store or contact us to enquire about availability, gift packing, customisation and pricing.</p>
         <div class="modal-actions">
-          <button class="btn-gold" id="modalEnquire" data-i18n="enquireNow">Enquire Now</button>
-          <button class="btn-ghost" id="modalFav">♡ Save</button>
-          <button class="btn-ghost" id="modalShare" data-i18n="share">↗ Share</button>
+          <button class="btn-gold" id="modalEnquire" type="button">₹ Ask Price</button>
+          <button class="btn-ghost" id="modalFav" type="button">♡ Save</button>
         </div>
-      </div>
-      <div class="modal-related" id="modalRelatedWrap" style="display:none;">
-        <div class="mini-row-head" data-i18n="relatedTreats">Related Treats</div>
-        <div class="related-strip" id="modalRelated"></div>
       </div>
     </div>
   </div>
@@ -2038,40 +2067,11 @@
 
         modalCard.style.transform = "";
         resetZoom();
-        modalImg.src = item.gallery[0];
+        const productImage = item.imgLarge || item.img || (item.gallery && item.gallery[0]) || "";
+        modalImg.src = productImage;
         modalImg.alt = item.name;
         modalName.textContent = item.name;
-        modalCat.textContent = item.categoryLabel + (item.isNew ? " · New" : "");
-
-        // Gallery dots
-        if (item.gallery.length > 1) {
-          galleryDots.style.display = "flex";
-          galleryDots.innerHTML = item.gallery.map((_, i) => `<span class="gallery-dot ${i === 0 ? "active" : ""}" data-gi="${i}"></span>`).join("");
-          galleryDots.querySelectorAll(".gallery-dot").forEach(d => d.addEventListener("click", () => setGalleryIndex(Number(d.dataset.gi))));
-        } else {
-          galleryDots.style.display = "none";
-        }
-
-        // Related treats
-        const related = CATALOG_ITEMS.filter(x => x.category === item.category && x.id !== item.id).slice(0, 6);
-        const relWrap = document.querySelector("#modalRelatedWrap");
-        const relStrip = document.querySelector("#modalRelated");
-        if (related.length) {
-          relWrap.style.display = "block";
-          relStrip.innerHTML = related.map(r => `
-            <div class="rel-card" data-rel="${r.id}">
-              <img src="${r.img}" alt="${escapeHTML(r.name)}" referrerpolicy="no-referrer" />
-              <span>${escapeHTML(r.name)}</span>
-            </div>`).join("");
-          relStrip.querySelectorAll(".rel-card").forEach(rc => {
-            rc.addEventListener("click", () => {
-              const targetItem = CATALOG_ITEMS.find(x => x.id === rc.dataset.rel);
-              if (targetItem) openProduct(targetItem);
-            });
-          });
-        } else {
-          relWrap.style.display = "none";
-        }
+        galleryDots.style.display = "none";
 
         productModal.classList.add("show");
         productModal.setAttribute("aria-hidden", "false");
@@ -2152,17 +2152,23 @@
         } catch (e) {}
       });
 
-      // Enquire + Confetti + WhatsApp
-      document.querySelector("#modalEnquire").addEventListener("click", (e) => {
-        if (WHATSAPP_NUMBER && currentProduct) {
-          buzz([20, 40, 20]);
-          spawnConfetti(e.clientX, e.clientY);
-          showToast("Opening WhatsApp…", "💬");
-          const msg = encodeURIComponent(`Hi, I'm interested in "${currentProduct.name}" (${currentProduct.categoryLabel}).`);
-          setTimeout(() => window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank", "noopener"), 280);
-        } else {
-          closeProduct();
-        }
+      // Ask Price: open WhatsApp with the selected product name and image link.
+      document.querySelector("#modalEnquire").addEventListener("click", () => {
+        if (!WHATSAPP_NUMBER || !currentProduct) return;
+
+        const productName = currentProduct.name || "this chocolate";
+        const imageUrl = currentProduct.imgLarge || currentProduct.img || "";
+        const message = [
+          "Hi! I'm interested in this CHOCO·AI product:",
+          `Product: ${productName}`,
+          `Category: ${currentProduct.categoryLabel || "Chocolate"}`,
+          "I'd like to know the price and availability, please.",
+          imageUrl ? `Product image: ${imageUrl}` : ""
+        ].filter(Boolean).join("\\n");
+
+        buzz([20, 40, 20]);
+        const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, "_blank", "noopener,noreferrer");
       });
 
       // Swipe-down to close modal (disabled while zoomed)
