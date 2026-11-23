@@ -1,0 +1,2506 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="dark" data-season="default">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a0f0a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>CHOCO-AI | Live Drive AR</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+  <style>
+    :root {
+      --deep: #1a0f0a;
+      --deep-2: #2a1810;
+      --brand-accent: #6b3a1f;
+      --brand-accent-dark: #3a1d0e;
+      --gold: #D4AF37;
+      --gold-soft: #F0D687;
+      --cream: #F5EFE6;
+      --cream-dim: rgba(245, 239, 230, 0.66);
+      --glass: rgba(245, 239, 230, 0.08);
+      --glass-strong: rgba(26, 15, 10, 0.86);
+      --glass-border: rgba(212, 175, 55, 0.35);
+      --card-bg: rgba(255, 255, 255, 0.045);
+      --heart: #ff5a6e;
+      --nav-bg: rgba(26, 15, 10, 0.82);
+      --modal-backdrop: rgba(12, 6, 3, 0.82);
+    }
+
+    /* ---------- Milk Chocolate Light Theme ---------- */
+    [data-mode="light"] {
+      --deep: #FAF3E8;
+      --deep-2: #EFE2CE;
+      --brand-accent: #7A4424;
+      --brand-accent-dark: #4E2710;
+      --gold: #B0851A;
+      --gold-soft: #8A640D;
+      --cream: #2B170B;
+      --cream-dim: rgba(43, 23, 11, 0.68);
+      --glass: rgba(78, 39, 16, 0.07);
+      --glass-strong: rgba(250, 243, 232, 0.92);
+      --glass-border: rgba(176, 133, 26, 0.38);
+      --card-bg: rgba(255, 255, 255, 0.72);
+      --nav-bg: rgba(250, 243, 232, 0.88);
+      --modal-backdrop: rgba(43, 23, 11, 0.58);
+    }
+
+    /* ---------- Seasonal Accent Themes ---------- */
+    [data-season="diwali"] {
+      --gold: #FFB703;
+      --gold-soft: #FFD166;
+      --brand-accent: #9E2A2B;
+      --brand-accent-dark: #540B0E;
+    }
+    [data-season="christmas"] {
+      --gold: #E0B84C;
+      --gold-soft: #F7DC88;
+      --brand-accent: #1B5E3A;
+      --brand-accent-dark: #0E3822;
+      --heart: #D62828;
+    }
+    [data-season="valentine"] {
+      --gold: #F4A6B8;
+      --gold-soft: #FFD1DC;
+      --brand-accent: #8E1B3A;
+      --brand-accent-dark: #4A0D1E;
+      --heart: #FF3366;
+    }
+    [data-season="pongal"] {
+      --gold: #E9A825;
+      --gold-soft: #F9D469;
+      --brand-accent: #B85D19;
+      --brand-accent-dark: #6E330B;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; background: #1a0f0a; overflow: hidden;
+      font-family: 'Manrope', 'Noto Sans Tamil', sans-serif; color: var(--cream);
+      -webkit-tap-highlight-color: transparent; height: 100%;
+    }
+
+    body.catalog-open a-scene,
+    body.catalog-open #rawCameraFeed {
+      filter: brightness(0.25) saturate(0.7) blur(10px);
+      transition: filter 0.6s ease; pointer-events: none;
+    }
+    a-scene { transition: filter 0.4s ease; }
+
+    #rawCameraFeed {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: 0; background: #000; transition: filter 0.4s ease;
+    }
+
+    /* ---------- Loading Curtain ---------- */
+    #blackCurtain {
+      position: fixed; inset: 0;
+      background: radial-gradient(circle at 50% 40%, #2a1810 0%, #1a0f0a 70%);
+      z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center;
+      gap: 22px; transition: opacity 0.6s ease; pointer-events: none;
+    }
+    .choco-bar {
+      position: relative; width: min(70vw, 260px); height: 36px; border-radius: 8px;
+      border: 1.5px solid #D4AF37; overflow: hidden; background: rgba(255,255,255,0.05);
+      box-shadow: 0 0 18px rgba(212,175,55,0.2);
+    }
+    .choco-fill {
+      position: absolute; inset: 0 auto 0 0; width: 0%;
+      background: linear-gradient(180deg, #8a5230 0%, #3a1d0e 100%);
+      border-right: 2px solid #F0D687;
+      transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .choco-fill::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(115deg, transparent 30%, rgba(240,214,135,0.35) 50%, transparent 70%);
+      background-size: 200% 100%; animation: shimmer 1.6s linear infinite;
+    }
+    .choco-bar::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background:
+        repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), rgba(212,175,55,0.5) calc(25% - 1px) 25%),
+        linear-gradient(180deg, transparent 48%, rgba(212,175,55,0.4) 48% 52%, transparent 52%);
+    }
+    #loader {
+      font-family: 'Cormorant Garamond', 'Noto Sans Tamil', serif; font-weight: 500; font-style: italic;
+      font-size: 19px; letter-spacing: 2px; color: #F5EFE6; text-align: center;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    #loader span {
+      display: block; font-family: 'Manrope', sans-serif; font-style: normal;
+      font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+      color: #F0D687; margin-top: 6px;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+
+    /* ---------- AR HUD ---------- */
+    #brandMark {
+      position: fixed; top: max(18px, env(safe-area-inset-top)); left: 50%;
+      transform: translateX(-50%); z-index: 500; display: flex; align-items: center; gap: 8px; padding: 8px 16px;
+      background: rgba(26, 15, 10, 0.65); border: 1px solid rgba(212,175,55,0.35); border-radius: 999px;
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 15px;
+      letter-spacing: 3px; color: #F0D687; pointer-events: none; transition: opacity 0.4s ease;
+    }
+    #brandMark::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #D4AF37; box-shadow: 0 0 8px #D4AF37; }
+
+    #hudTopRight {
+      position: fixed; top: max(16px, env(safe-area-inset-top)); right: 16px;
+      z-index: 600; display: flex; gap: 8px; transition: opacity 0.3s ease;
+    }
+    body.catalog-open #hudTopRight { opacity: 0; pointer-events: none; }
+    .hud-icon-btn {
+      width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(212,175,55,0.4);
+      background: rgba(26, 15, 10, 0.72); color: #F0D687; font-size: 15px; cursor: pointer;
+      display: grid; place-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      transition: transform 0.15s ease, background 0.2s ease;
+    }
+    .hud-icon-btn:active { transform: scale(0.92); }
+    .hud-icon-btn.muted { opacity: 0.55; }
+
+    #scanHint {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      z-index: 400; width: min(64vw, 260px); aspect-ratio: 1;
+      transition: opacity 0.4s ease, transform 0.4s ease; pointer-events: none;
+    }
+    #scanHint .corner { position: absolute; width: 30px; height: 30px; border: 2px solid var(--gold); opacity: 0.85; }
+    #scanHint .tl { top: 0; left: 0; border-right: none; border-bottom: none; border-radius: 6px 0 0 0; }
+    #scanHint .tr { top: 0; right: 0; border-left: none; border-bottom: none; border-radius: 0 6px 0 0; }
+    #scanHint .bl { bottom: 0; left: 0; border-right: none; border-top: none; border-radius: 0 0 0 6px; }
+    #scanHint .br { bottom: 0; right: 0; border-left: none; border-top: none; border-radius: 0 0 6px 0; }
+    #scanHint .scanline {
+      position: absolute; left: 4px; right: 4px; height: 1.5px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      box-shadow: 0 0 8px var(--gold); animation: scanMove 2.2s ease-in-out infinite;
+    }
+    @keyframes scanMove { 0% { top: 6%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 92%; opacity: 0; } }
+    #scanHint p {
+      position: absolute; bottom: -36px; width: 100%; text-align: center;
+      font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(245,239,230,0.85);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    }
+    body.found #scanHint, body.found #brandMark { opacity: 0; }
+
+    /* Custom tracking-lost soft hint */
+    #lostHint {
+      position: fixed; top: calc(50% + min(32vw, 130px) + 46px); left: 50%;
+      transform: translateX(-50%) translateY(8px); z-index: 450;
+      padding: 8px 16px; border-radius: 999px; background: rgba(26,15,10,0.84);
+      border: 1px solid rgba(212,175,55,0.45); color: #F0D687;
+      font-size: 11px; letter-spacing: 1px; white-space: nowrap;
+      opacity: 0; pointer-events: none; transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    #lostHint.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    body.found #lostHint, body.catalog-open #lostHint { opacity: 0 !important; }
+
+    /* AR Tap-to-reveal Info Bubble */
+    #arInfoBubble {
+      position: fixed; top: max(70px, calc(env(safe-area-inset-top) + 56px)); left: 50%;
+      transform: translateX(-50%) translateY(-10px) scale(0.95); z-index: 950;
+      width: min(88vw, 320px); padding: 14px 16px; border-radius: 16px;
+      background: rgba(26,15,10,0.92); border: 1px solid var(--gold);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      color: #F5EFE6; box-shadow: 0 14px 34px rgba(0,0,0,0.55);
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.35s cubic-bezier(0.22,1,0.36,1);
+    }
+    #arInfoBubble.show { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0) scale(1); }
+    #arInfoBubble h4 { margin: 0 0 4px; font-family: 'Cormorant Garamond', serif; font-size: 20px; color: #F0D687; }
+    #arInfoBubble p { margin: 0 0 10px; font-size: 12px; line-height: 1.5; color: rgba(245,239,230,0.8); }
+    #arInfoBubble .bubble-actions { display: flex; gap: 8px; }
+    #arInfoBubble .bubble-btn {
+      padding: 7px 14px; border-radius: 999px; border: none; font-size: 11px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+    }
+    #arInfoBubble .bubble-btn.primary { background: linear-gradient(135deg, var(--gold), var(--gold-soft)); color: #1a0f0a; }
+    #arInfoBubble .bubble-btn.ghost { background: transparent; border: 1px solid rgba(212,175,55,0.4); color: #F5EFE6; }
+
+    /* ---------- Buttons & Play Progress Ring ---------- */
+    .plan-button {
+      position: relative; overflow: hidden; padding: 13px 24px;
+      font-family: 'Manrope', 'Noto Sans Tamil', sans-serif; font-size: 13px; font-weight: 700;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      border: 1px solid rgba(212,175,55,0.4); border-radius: 999px;
+      background: linear-gradient(135deg, var(--brand-accent) 0%, var(--brand-accent-dark) 100%);
+      color: #F5EFE6; cursor: pointer; box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      transition: transform 0.15s ease, opacity 0.4s ease; white-space: nowrap;
+    }
+    .plan-button:active { transform: scale(0.96); }
+
+    #openCatalogBtn {
+      position: fixed; bottom: max(25px, env(safe-area-inset-bottom)); left: 20px; z-index: 1000;
+      background: rgba(26, 15, 10, 0.85); border: 1px solid var(--gold); color: #F0D687;
+      display: flex; align-items: center; gap: 8px;
+    }
+    body.catalog-open #openCatalogBtn { opacity: 0; pointer-events: none; }
+
+    .video-panel {
+      position: fixed; bottom: max(22px, env(safe-area-inset-bottom)); right: 20px;
+      transform: translateY(16px); display: flex; align-items: center; gap: 10px;
+      opacity: 0; z-index: 1000;
+      transition: opacity 0.45s ease, transform 0.45s ease; pointer-events: none;
+    }
+    body.found .video-panel { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    body.catalog-open .video-panel { opacity: 0; pointer-events: none; }
+
+    .play-ring-wrap {
+      position: relative; width: 62px; height: 62px; display: grid; place-items: center;
+    }
+    .play-ring-svg {
+      position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); pointer-events: none;
+    }
+    .play-ring-bg { fill: none; stroke: rgba(212,175,55,0.22); stroke-width: 3; }
+    .play-ring-fg {
+      fill: none; stroke: var(--gold); stroke-width: 3; stroke-linecap: round;
+      stroke-dasharray: 175.9; stroke-dashoffset: 175.9; transition: stroke-dashoffset 0.15s linear;
+    }
+    #toggleButton {
+      width: 50px; height: 50px; padding: 0; border-radius: 50%; display: grid; place-items: center;
+      font-size: 18px; letter-spacing: 0;
+    }
+
+    /* Ripple */
+    .btn-gold, .btn-ghost, .close-btn, .category-chip, .modal-close, .icon-pill { position: relative; overflow: hidden; }
+    .ripple {
+      position: absolute; border-radius: 50%; pointer-events: none; background: rgba(240,214,135,0.45);
+      transform: scale(0); animation: ripple 0.6s ease-out forwards;
+    }
+    .btn-gold .ripple, .category-chip.active .ripple { background: rgba(26,15,10,0.25); }
+    @keyframes ripple { to { transform: scale(1); opacity: 0; } }
+
+    /* ---------- Chocolate Melt Drip Page Transition ---------- */
+    #meltTransition {
+      position: fixed; inset: 0; z-index: 2500; pointer-events: none;
+      transform: translateY(-110%); transition: transform 0.72s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+    #meltTransition.dripping { transform: translateY(0%); }
+    #meltTransition.clearing { transform: translateY(110%); }
+    #meltTransition svg { width: 100%; height: 120%; display: block; }
+
+    /* ---------- First-Time Onboarding & Camera Permission Helper ---------- */
+    .overlay-modal {
+      position: fixed; inset: 0; z-index: 95000; display: flex; align-items: center; justify-content: center;
+      padding: 20px; background: rgba(12,6,3,0.86); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      opacity: 0; pointer-events: none; transition: opacity 0.35s ease;
+    }
+    .overlay-modal.show { opacity: 1; pointer-events: auto; }
+    .overlay-card {
+      width: 100%; max-width: 380px; border-radius: 22px; padding: 28px 24px 24px;
+      background: linear-gradient(180deg, #2a1810, #1a0f0a); border: 1px solid rgba(212,175,55,0.4);
+      color: #F5EFE6; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.65);
+    }
+    .ob-slides { overflow: hidden; margin-bottom: 18px; }
+    .ob-track { display: flex; transition: transform 0.4s cubic-bezier(0.22,1,0.36,1); }
+    .ob-slide { min-width: 100%; padding: 6px 4px; }
+    .ob-icon { font-size: 46px; margin-bottom: 10px; }
+    .ob-slide h3 { margin: 0 0 8px; font-family: 'Cormorant Garamond', 'Noto Sans Tamil', serif; font-size: 26px; color: #F0D687; }
+    .ob-slide p { margin: 0; font-size: 13px; line-height: 1.6; color: rgba(245,239,230,0.78); }
+    .ob-dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; }
+    .ob-dot { width: 8px; height: 8px; border-radius: 999px; background: rgba(245,239,230,0.28); transition: all 0.3s ease; }
+    .ob-dot.active { width: 24px; background: var(--gold); }
+    .ob-actions { display: flex; gap: 10px; justify-content: center; }
+
+    /* =====================================================
+       WEBSITE-STYLE CATALOG
+    ===================================================== */
+    #catalogStage { position: fixed; inset: 0; z-index: 2000; pointer-events: none; }
+
+    #catalogSheet {
+      position: absolute; inset: 0; height: 100dvh; width: 100vw;
+      background:
+        radial-gradient(ellipse at 15% -10%, rgba(107,58,31,0.38) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 20%, rgba(212,175,55,0.12) 0%, transparent 45%),
+        linear-gradient(180deg, var(--deep-2) 0%, var(--deep) 100%);
+      overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scroll-behavior: smooth;
+      transform: translateY(100%); opacity: 0;
+      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+      pointer-events: none;
+    }
+    #catalogSheet.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    #catalogSheet::-webkit-scrollbar { width: 8px; }
+    #catalogSheet::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.35); border-radius: 8px; }
+
+    .container { width: 100%; max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(24px); }
+    .reveal.in { opacity: 1; transform: none; transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1); }
+    .reveal.done { transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
+
+    /* Sticky Mini-Header Shrink */
+    .site-nav {
+      position: sticky; top: 0; z-index: 30; background: var(--nav-bg);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--glass-border); padding-top: env(safe-area-inset-top);
+      transition: backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+    }
+    .site-nav.scrolled {
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 8px 26px rgba(0,0,0,0.22);
+    }
+    .nav-inner { display: flex; align-items: center; gap: 10px; height: 64px; transition: height 0.28s ease; }
+    .site-nav.scrolled .nav-inner { height: 52px; }
+    .nav-logo {
+      font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 21px;
+      letter-spacing: 3.5px; color: var(--gold-soft); display: flex; align-items: center; gap: 8px; white-space: nowrap;
+      transition: font-size 0.28s ease;
+    }
+    .site-nav.scrolled .nav-logo { font-size: 18px; }
+    .nav-logo::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+    .nav-links { display: none; gap: 22px; margin-left: 20px; }
+    .nav-links a { font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cream-dim); text-decoration: none; cursor: pointer; transition: color .2s; }
+    .nav-links a:hover { color: var(--gold-soft); }
+    .nav-spacer { flex: 1; }
+
+    .nav-controls { display: flex; align-items: center; gap: 6px; }
+    .icon-pill {
+      height: 34px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--glass-border);
+      background: var(--glass); color: var(--cream); font-size: 12px; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 4px; white-space: nowrap;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .icon-pill:hover { border-color: var(--gold); }
+    select.icon-pill { outline: none; padding-right: 6px; }
+    select.icon-pill option { background: #2a1810; color: #F5EFE6; }
+
+    .nav-search { position: relative; display: none; width: 230px; }
+    .nav-search input, .mobile-search input {
+      width: 100%; padding: 9px 14px 9px 36px; border-radius: 999px;
+      border: 1px solid var(--glass-border); background: var(--glass);
+      color: var(--cream); font-family: 'Manrope', 'Noto Sans Tamil', sans-serif; font-size: 13px; outline: none;
+      transition: border-color .2s, background .2s;
+    }
+    .nav-search input:focus, .mobile-search input:focus { border-color: var(--gold); }
+    .nav-search input::placeholder, .mobile-search input::placeholder { color: var(--cream-dim); }
+    .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 13px; opacity: .7; pointer-events: none; }
+    .close-btn {
+      display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px;
+      border: 1px solid var(--gold); background: transparent; color: var(--gold-soft);
+      font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+      transition: background .2s, color .2s, transform .15s;
+    }
+    .close-btn:hover { background: var(--gold); color: var(--deep); }
+    .close-btn span { display: none; }
+    .mobile-search { position: relative; padding: 0 20px 10px; }
+    .mobile-search .search-icon { left: 33px; top: calc(50% - 5px); }
+
+    /* Search Suggestions Dropdown */
+    .search-suggestions {
+      position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 40;
+      background: var(--glass-strong); border: 1px solid var(--glass-border); border-radius: 14px;
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      overflow: hidden; display: none; box-shadow: 0 14px 30px rgba(0,0,0,0.35);
+    }
+    .mobile-search .search-suggestions { left: 20px; right: 20px; top: calc(100% - 6px); }
+    .search-suggestions.show { display: block; }
+    .sugg-item {
+      padding: 10px 14px; font-size: 13px; cursor: pointer; display: flex; justify-content: space-between;
+      align-items: center; border-bottom: 1px solid rgba(212,175,55,0.12); color: var(--cream);
+    }
+    .sugg-item:last-child { border-bottom: none; }
+    .sugg-item:hover { background: rgba(212,175,55,0.16); }
+    .sugg-item small { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); }
+    mark.hl { background: rgba(212,175,55,0.35); color: inherit; border-radius: 3px; padding: 0 2px; }
+
+    /* Parallax Hero */
+    .hero { position: relative; padding: 48px 0 38px; text-align: center; overflow: hidden; }
+    .hero::before {
+      content: ""; position: absolute; left: 50%; top: -120px; width: 620px; height: 620px;
+      transform: translateX(-50%); border-radius: 50%;
+      background: radial-gradient(circle, rgba(107,58,31,0.45) 0%, transparent 65%); pointer-events: none;
+    }
+    .hero-parallax { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .p-shape {
+      position: absolute; border-radius: 10px; border: 1px solid rgba(212,175,55,0.28);
+      background: linear-gradient(135deg, rgba(107,58,31,0.32), rgba(212,175,55,0.12));
+      will-change: transform;
+    }
+    .p-s1 { width: 54px; height: 54px; top: 14%; left: 8%; transform: rotate(18deg); }
+    .p-s2 { width: 34px; height: 34px; top: 26%; right: 10%; border-radius: 50%; }
+    .p-s3 { width: 42px; height: 42px; bottom: 18%; left: 16%; transform: rotate(-22deg); }
+    .p-s4 { width: 64px; height: 64px; bottom: 10%; right: 14%; transform: rotate(32deg); }
+    .hero > .container { position: relative; z-index: 2; }
+
+    .greeting-pill {
+      display: inline-block; padding: 5px 14px; border-radius: 999px; margin-bottom: 12px;
+      background: var(--glass); border: 1px solid var(--glass-border);
+      font-size: 11px; letter-spacing: 1.4px; color: var(--gold-soft);
+    }
+    .eyebrow { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold-soft); margin-bottom: 10px; }
+    .hero h1 {
+      font-family: 'Cormorant Garamond', 'Noto Sans Tamil', serif; font-weight: 600;
+      font-size: clamp(36px, 8vw, 72px); line-height: 1.05; margin: 0 0 14px; letter-spacing: 1px;
+      background: linear-gradient(100deg, var(--gold) 15%, var(--cream) 48%, var(--gold) 80%);
+      background-size: 220% auto; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    #catalogSheet.open .hero h1 { animation: titleShine 2.4s ease-out 0.4s 1; }
+    @keyframes titleShine { 0% { background-position: 200% center; } 100% { background-position: 0% center; } }
+    .hero p { max-width: 520px; margin: 0 auto 24px; color: var(--cream-dim); font-size: 15px; line-height: 1.7; }
+    .hero-cta { display: inline-flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .btn-gold {
+      padding: 12px 26px; border-radius: 999px; border: none; cursor: pointer;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-soft) 100%); color: #1a0f0a;
+      font-family: 'Manrope', 'Noto Sans Tamil', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase;
+      box-shadow: 0 10px 28px rgba(212,175,55,0.25); transition: transform .15s;
+    }
+    .btn-gold:active { transform: scale(0.96); }
+    .btn-ghost {
+      padding: 12px 24px; border-radius: 999px; cursor: pointer; background: transparent;
+      border: 1px solid var(--glass-border); color: var(--cream);
+      font-family: 'Manrope', 'Noto Sans Tamil', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1.3px; text-transform: uppercase;
+    }
+    .hero-stats { display: flex; justify-content: center; gap: 36px; margin-top: 32px; flex-wrap: wrap; }
+    .stat b { display: block; font-family: 'Cormorant Garamond', serif; font-size: 30px; color: var(--gold-soft); font-weight: 600; }
+    .stat span { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--cream-dim); }
+
+    /* Recently Viewed Row */
+    #recentSection { display: none; margin: 8px 0 24px; }
+    #recentSection.has-items { display: block; }
+    .mini-row-head { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; font-weight: 700; }
+    .recent-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; }
+    .recent-row::-webkit-scrollbar { display: none; }
+    .recent-chip {
+      flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px;
+      border-radius: 12px; background: var(--card-bg); border: 1px solid var(--glass-border);
+      cursor: pointer; transition: border-color 0.2s; max-width: 210px;
+    }
+    .recent-chip:hover { border-color: var(--gold); }
+    .recent-chip img { width: 42px; height: 42px; border-radius: 8px; object-fit: cover; }
+    .recent-chip span { font-size: 12px; font-weight: 600; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-transform: capitalize; }
+
+    .section-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+    .section-title { font-family: 'Cormorant Garamond', 'Noto Sans Tamil', serif; font-size: 30px; font-weight: 600; margin: 0; color: var(--cream); }
+    .section-title small { display: block; font-family: 'Manrope', sans-serif; font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 4px; font-weight: 600; }
+
+    /* Toolbar + Sliding Gold Pill */
+    .toolbar {
+      position: sticky; top: 52px; z-index: 20; padding: 10px 0;
+      background: linear-gradient(180deg, var(--deep) 72%, transparent);
+    }
+    .toolbar-inner { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
+    .category-scroll {
+      position: relative; display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 3px 2px;
+    }
+    .category-scroll::-webkit-scrollbar { display: none; }
+    .chip-slider {
+      position: absolute; top: 3px; bottom: 3px; left: 0; width: 0; border-radius: 999px;
+      background: var(--gold); z-index: 0; pointer-events: none;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), width 0.35s cubic-bezier(0.22, 1, 0.36, 1), background 0.25s ease;
+    }
+    .chip-slider.fav-mode { background: var(--heart); }
+    .category-chip {
+      position: relative; z-index: 1; padding: 8px 16px; border-radius: 999px; background: var(--glass);
+      border: 1px solid var(--glass-border); color: var(--cream); font-family: 'Manrope', 'Noto Sans Tamil', sans-serif;
+      font-size: 12px; letter-spacing: 0.8px; white-space: nowrap; cursor: pointer; transition: color 0.25s ease, border-color 0.25s ease;
+    }
+    .category-chip .count { opacity: .65; margin-left: 6px; font-size: 11px; }
+    .category-chip:hover { border-color: var(--gold); }
+    .category-chip.active { background: transparent; color: #1a0f0a; border-color: transparent; font-weight: 700; }
+    .category-chip.fav-chip.active { color: #fff; }
+
+    .toolbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .sort-wrap { display: none; align-items: center; gap: 6px; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--cream-dim); }
+    .sort-wrap select {
+      background: var(--glass); color: var(--cream); border: 1px solid var(--glass-border);
+      border-radius: 999px; padding: 7px 12px; font-family: 'Manrope', sans-serif; font-size: 12px; outline: none;
+    }
+    .sort-wrap select option { background: #2a1810; color: #F5EFE6; }
+    .result-line { font-size: 12px; color: var(--cream-dim); letter-spacing: 1px; margin: 4px 0 16px; }
+
+    /* Product Grid + List View Toggle + Crossfade */
+    .catalog-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; padding-bottom: 60px;
+      transition: opacity 0.25s ease;
+    }
+    .catalog-grid.fading { opacity: 0.2; }
+    .catalog-grid.list-view { grid-template-columns: 1fr !important; max-width: 720px; margin: 0 auto; }
+    .catalog-grid.list-view .catalog-card { flex-direction: row; align-items: stretch; }
+    .catalog-grid.list-view .thumb-wrap { width: 42%; max-width: 240px; aspect-ratio: 1; flex-shrink: 0; }
+    .catalog-grid.list-view .card-body { justify-content: center; padding: 18px 20px; }
+    .catalog-grid.list-view .card-body .name { font-size: 22px; }
+
+    .catalog-card {
+      position: relative; background: var(--card-bg); border: 1px solid rgba(212,175,55,0.22);
+      border-radius: 16px; overflow: hidden; cursor: pointer; display: flex; flex-direction: column;
+      transform-style: preserve-3d; will-change: transform;
+    }
+    .catalog-card.done:hover {
+      border-color: var(--gold);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(212,175,55,0.18);
+    }
+    .thumb-wrap { position: relative; width: 100%; aspect-ratio: 4/5; overflow: hidden; background: rgba(128,90,60,0.12); }
+    .thumb-wrap img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: blur(14px); transform: scale(1.08);
+      transition: filter 0.55s ease, transform 0.65s ease;
+    }
+    .thumb-wrap img.loaded { filter: blur(0); transform: scale(1); }
+    .catalog-card:hover .thumb-wrap img.loaded { transform: scale(1.07); }
+    .badge {
+      position: absolute; top: 10px; left: 10px; z-index: 2; padding: 4px 10px; border-radius: 999px;
+      background: rgba(26,15,10,0.76); border: 1px solid rgba(212,175,55,0.35);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      font-size: 9px; letter-spacing: 1.4px; text-transform: uppercase; color: #F0D687;
+      max-width: calc(100% - 60px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .badge.new {
+      top: auto; bottom: 10px; background: linear-gradient(135deg, var(--gold), var(--gold-soft));
+      color: #1a0f0a; border-color: var(--gold); font-weight: 800; animation: newGlow 2s ease-in-out infinite;
+    }
+    @keyframes newGlow { 0%, 100% { box-shadow: 0 0 0 rgba(212,175,55,0); } 50% { box-shadow: 0 0 14px rgba(212,175,55,0.8); } }
+
+    .heart {
+      position: absolute; top: 8px; right: 8px; z-index: 3; width: 34px; height: 34px; border-radius: 50%;
+      border: 1px solid rgba(212,175,55,0.35); background: rgba(26,15,10,0.72); color: #F5EFE6;
+      font-size: 16px; line-height: 1; cursor: pointer; padding: 0;
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: color .2s, border-color .2s, transform .15s;
+    }
+    .heart.on { color: var(--heart); border-color: var(--heart); }
+    .heart.pop { animation: heartPop 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
+    @keyframes heartPop { 0% { transform: scale(1); } 35% { transform: scale(1.45); } 100% { transform: scale(1); } }
+    .burst-p {
+      position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--heart); pointer-events: none; animation: burst 0.6s ease-out forwards;
+    }
+    .burst-p:nth-child(odd) { background: var(--gold); }
+    @keyframes burst {
+      from { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+      to { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0); opacity: 0; }
+    }
+
+    .card-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; }
+    .card-body .name {
+      font-family: 'Cormorant Garamond', 'Noto Sans Tamil', serif; font-size: 18px; font-weight: 600; color: var(--cream);
+      line-height: 1.2; text-transform: capitalize; overflow: hidden; display: -webkit-box;
+      -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    }
+    .card-body .view { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); display: flex; align-items: center; gap: 6px; }
+    .card-body .view::after { content: "→"; transition: transform .25s; }
+    .catalog-card:hover .view::after { transform: translateX(5px); }
+
+    .skeleton { pointer-events: none; }
+    .skeleton .thumb-wrap, .skeleton .line {
+      background: linear-gradient(90deg, rgba(160,120,80,0.08) 25%, rgba(212,175,55,0.16) 50%, rgba(160,120,80,0.08) 75%);
+      background-size: 200% 100%; animation: shimmer 1.4s infinite;
+    }
+    .skeleton .line { height: 14px; border-radius: 6px; margin: 4px 0; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    /* Empty-State Animated Sad Chocolate Bar */
+    .catalog-empty {
+      grid-column: 1 / -1; text-align: center; color: var(--cream-dim); padding: 48px 16px;
+      font-family: 'Cormorant Garamond', 'Noto Sans Tamil', serif; font-size: 20px; font-style: italic;
+      display: flex; flex-direction: column; align-items: center; gap: 14px;
+    }
+    .sad-choco-svg { width: 96px; height: 96px; animation: sadBob 2.6s ease-in-out infinite; }
+    @keyframes sadBob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(2deg); } }
+
+    .promise { border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); padding: 28px 0; }
+    .promise-grid { display: grid; grid-template-columns: 1fr; gap: 20px; text-align: center; }
+    .promise-item .ic { font-size: 22px; margin-bottom: 6px; }
+    .promise-item h4 { margin: 0 0 4px; font-family: 'Cormorant Garamond', 'Noto Sans Tamil', serif; font-size: 19px; color: var(--gold-soft); }
+    .promise-item p { margin: 0; font-size: 12px; color: var(--cream-dim); line-height: 1.6; }
+
+    .site-footer { padding: 44px 0 calc(40px + env(safe-area-inset-bottom)); text-align: center; background: rgba(0,0,0,0.14); }
+    .site-footer .logo { font-family: 'Cormorant Garamond', serif; font-size: 26px; letter-spacing: 5px; color: var(--gold-soft); font-weight: 700; }
+    .site-footer p { color: var(--cream-dim); font-size: 12px; letter-spacing: 1px; margin: 10px 0 0; }
+    .footer-links { display: flex; justify-content: center; gap: 22px; margin: 18px 0; flex-wrap: wrap; }
+    .footer-links a { color: var(--cream); font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; cursor: pointer; opacity: .8; }
+    .footer-links a:hover { color: var(--gold-soft); opacity: 1; }
+
+    /* Back-to-top Button */
+    #backToTop {
+      position: fixed; right: 20px; bottom: max(24px, env(safe-area-inset-bottom)); z-index: 2200;
+      width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--gold);
+      background: var(--glass-strong); color: var(--gold-soft); font-size: 18px; cursor: pointer;
+      display: grid; place-items: center; box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      opacity: 0; transform: translateY(16px); pointer-events: none; transition: opacity 0.25s, transform 0.25s;
+    }
+    #backToTop.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+    /* Product Modal + Gallery + Pinch Zoom + Related */
+    #productModal {
+      position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center;
+      padding: 16px; background: var(--modal-backdrop); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      opacity: 0; pointer-events: none; transition: opacity .3s ease, background .2s ease;
+    }
+    #productModal.show { opacity: 1; pointer-events: auto; }
+    .modal-card {
+      width: 100%; max-width: 920px; max-height: 92dvh; overflow-y: auto;
+      background: linear-gradient(180deg, var(--deep-2), var(--deep));
+      border: 1px solid var(--glass-border); border-radius: 20px; position: relative;
+      display: grid; grid-template-columns: 1fr; transform: translateY(30px) scale(0.97);
+      transition: transform .4s cubic-bezier(0.22, 1, 0.36, 1); overscroll-behavior: contain;
+    }
+    #productModal.show .modal-card { transform: translateY(0) scale(1); }
+    .grabber { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 0 2px; }
+    .grabber i { width: 42px; height: 4px; border-radius: 4px; background: var(--cream-dim); opacity: 0.4; }
+    .grabber small { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--cream-dim); }
+    .modal-img { position: relative; background: rgba(128,90,60,0.08); aspect-ratio: 1; overflow: hidden; touch-action: none; }
+    .modal-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.15s ease-out; transform-origin: center; }
+    .gallery-dots {
+      position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 6px; padding: 5px 10px; border-radius: 999px; background: rgba(26,15,10,0.65);
+    }
+    .gallery-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.4); cursor: pointer; }
+    .gallery-dot.active { background: var(--gold); transform: scale(1.2); }
+    .zoom-hint {
+      position: absolute; top: 12px; left: 12px; padding: 4px 10px; border-radius: 999px;
+      background: rgba(26,15,10,0.65); color: #F0D687; font-size: 10px; letter-spacing: 1px; pointer-events: none;
+    }
+    .modal-info { padding: 22px 22px 20px; display: flex; flex-direction: column; gap: 12px; justify-content: center; }
+    .modal-info .cat { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); }
+    .modal-info h2 { margin: 0; font-family: 'Cormorant Garamond', 'Noto Sans Tamil', serif; font-size: 32px; font-weight: 600; text-transform: capitalize; line-height: 1.1; }
+    .modal-info p { margin: 0; color: var(--cream-dim); font-size: 14px; line-height: 1.65; }
+    .modal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    #modalFav.on { color: var(--heart); border-color: var(--heart); }
+    .modal-close {
+      position: absolute; top: 12px; right: 12px; z-index: 4; width: 38px; height: 38px; border-radius: 50%;
+      border: 1px solid var(--glass-border); background: var(--glass-strong); color: var(--gold-soft); font-size: 18px; cursor: pointer;
+    }
+
+    /* Related Treats Row in Modal */
+    .modal-related {
+      grid-column: 1 / -1; padding: 16px 22px 22px; border-top: 1px solid var(--glass-border);
+    }
+    .related-strip { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+    .related-strip::-webkit-scrollbar { display: none; }
+    .rel-card {
+      flex: 0 0 112px; border-radius: 12px; overflow: hidden; border: 1px solid var(--glass-border);
+      background: var(--card-bg); cursor: pointer; transition: border-color 0.2s;
+    }
+    .rel-card:hover { border-color: var(--gold); }
+    .rel-card img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+    .rel-card span {
+      display: block; padding: 6px 8px; font-size: 11px; color: var(--cream); text-transform: capitalize;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
+    /* Quick-View Long Press Overlay */
+    #quickViewOverlay {
+      position: fixed; inset: 0; z-index: 4500; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px; padding: 24px;
+      background: rgba(12,6,3,0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      opacity: 0; pointer-events: none; transition: opacity 0.22s ease;
+    }
+    #quickViewOverlay.show { opacity: 1; pointer-events: auto; }
+    #quickViewOverlay img {
+      max-width: min(86vw, 420px); max-height: 62dvh; border-radius: 18px;
+      border: 1.5px solid var(--gold); box-shadow: 0 24px 60px rgba(0,0,0,0.6); object-fit: cover;
+    }
+    #quickViewOverlay .qv-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; color: #F0D687; text-transform: capitalize; }
+    #quickViewOverlay small { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(245,239,230,0.65); }
+
+    /* Gold Sparkle Confetti Layer */
+    #confettiLayer { position: fixed; inset: 0; z-index: 99990; pointer-events: none; overflow: hidden; }
+    .sparkle-p {
+      position: absolute; width: 8px; height: 8px; border-radius: 2px; pointer-events: none;
+      animation: sparkleFly 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes sparkleFly {
+      0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(0.2) rotate(var(--rot)); opacity: 0; }
+    }
+
+    /* Upgraded Slide-in Toast with Icon */
+    #toast {
+      position: fixed; left: 50%; bottom: max(90px, calc(env(safe-area-inset-bottom) + 70px));
+      transform: translateX(-50%) translateY(24px); z-index: 99998; padding: 10px 18px; border-radius: 999px;
+      background: rgba(26, 15, 10, 0.94); border: 1px solid var(--gold); color: #F0D687;
+      font-size: 12px; font-weight: 600; letter-spacing: 1.1px;
+      display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 12px 30px rgba(0,0,0,0.45);
+      opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .3s cubic-bezier(0.22,1,0.36,1);
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Offline Fallback & PWA Banner */
+    #offlineOverlay { z-index: 98000; }
+    #pwaBanner {
+      position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom));
+      transform: translateX(-50%) translateY(120%); z-index: 2300;
+      width: min(92vw, 420px); padding: 12px 14px; border-radius: 16px;
+      background: var(--glass-strong); border: 1px solid var(--gold);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      box-shadow: 0 14px 36px rgba(0,0,0,0.45); transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
+    }
+    #pwaBanner.show { transform: translateX(-50%) translateY(0); }
+    #pwaBanner .pwa-txt { font-size: 12px; line-height: 1.4; color: var(--cream); }
+    #pwaBanner .pwa-txt b { color: var(--gold-soft); display: block; font-size: 13px; }
+
+    @media (min-width: 768px) {
+      .nav-links, .sort-wrap { display: flex; }
+      .nav-search { display: block; }
+      .mobile-search { display: none; }
+      .close-btn span { display: inline; }
+      .catalog-grid { grid-template-columns: repeat(3, 1fr); gap: 22px; }
+      .promise-grid { grid-template-columns: repeat(3, 1fr); }
+      .hero { padding: 76px 0 54px; }
+      .modal-card { grid-template-columns: 1fr 1fr; }
+      .grabber { display: none; }
+      .modal-img { aspect-ratio: auto; min-height: 440px; }
+      .modal-info { padding: 36px 32px; }
+    }
+    @media (min-width: 1100px) { .catalog-grid { grid-template-columns: repeat(4, 1fr); } }
+
+    [class^="mindar-ui"], [id^="mindar-ui"], .mindar-ui-overlay, .a-enter-vr, .a-enter-ar, .a-orientation-modal {
+      display: none !important; visibility: hidden !important; opacity: 0 !important;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #catalogSheet, .hero h1, .thumb-wrap img, .badge.new, .choco-fill::after, #meltTransition { animation: none !important; transition: opacity 0.3s ease !important; }
+      .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="confettiLayer"></div>
+  <div id="toast" role="status" aria-live="polite"><span id="toastIcon">✨</span><span id="toastMsg"></span></div>
+
+  <video id="rawCameraFeed" autoplay playsinline muted></video>
+
+  <!-- Loading Curtain -->
+  <div id="blackCurtain">
+    <div class="choco-bar"><div class="choco-fill" id="chocoFill"></div></div>
+    <div id="loader"><strong id="loaderText" style="font-weight:inherit">Warming camera…</strong><span data-i18n="cameraAr">Camera &amp; AR</span></div>
+  </div>
+
+  <!-- Chocolate Melt Drip Transition -->
+  <div id="meltTransition" aria-hidden="true">
+    <svg viewBox="0 0 1440 900" preserveAspectRatio="none">
+      <path fill="#3a1d0e" d="M0,0 L1440,0 L1440,680 C1340,790 1240,640 1120,760 C1000,880 880,690 740,810 C600,900 460,670 320,780 C180,880 90,710 0,770 Z"/>
+      <path fill="#D4AF37" fill-opacity="0.35" d="M0,0 L1440,0 L1440,640 C1330,740 1230,610 1110,720 C990,830 870,650 730,760 C590,850 450,630 310,740 C170,840 80,680 0,730 Z"/>
+    </svg>
+  </div>
+
+  <!-- AR HUD -->
+  <div id="brandMark">CHOCO·AI</div>
+  <div id="hudTopRight">
+    <button class="hud-icon-btn" id="soundToggleBtn" title="Toggle Sound" aria-label="Toggle Sound">🔊</button>
+    <button class="hud-icon-btn" id="hudLangBtn" title="Switch Language" aria-label="Switch Language">த</button>
+    <button class="hud-icon-btn" id="hudHelpBtn" title="How to use" aria-label="How to use">?</button>
+  </div>
+
+  <div id="scanHint">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <div class="scanline"></div>
+    <p data-i18n="alignCard">Align with drive card</p>
+  </div>
+
+  <div id="lostHint" data-i18n="moveCloser">Move closer to the card</div>
+
+  <!-- AR Tap-to-Reveal Info Bubble -->
+  <div id="arInfoBubble" role="dialog">
+    <h4 id="arBubbleTitle">✨ New Flavour</h4>
+    <p id="arBubbleDesc">Discover our freshest handcrafted gourmet chocolates added this week.</p>
+    <div class="bubble-actions">
+      <button class="bubble-btn primary" id="arBubbleCta">Explore</button>
+      <button class="bubble-btn ghost" id="arBubbleClose">Close</button>
+    </div>
+  </div>
+
+  <button class="plan-button" id="openCatalogBtn">🍫 <span data-i18n="catalog">Catalog</span></button>
+
+  <!-- Play Button with Gold Progress Ring -->
+  <div class="video-panel" id="videoControls">
+    <div class="play-ring-wrap">
+      <svg class="play-ring-svg" viewBox="0 0 62 62">
+        <circle class="play-ring-bg" cx="31" cy="31" r="28"></circle>
+        <circle class="play-ring-fg" id="playRingFg" cx="31" cy="31" r="28"></circle>
+      </svg>
+      <button class="plan-button" id="toggleButton" aria-label="Play or Pause Video">▶</button>
+    </div>
+  </div>
+
+  <!-- First-Time Onboarding Modal -->
+  <div class="overlay-modal" id="onboardingModal">
+    <div class="overlay-card">
+      <div class="ob-slides" id="obSwipeArea">
+        <div class="ob-track" id="obTrack">
+          <div class="ob-slide">
+            <div class="ob-icon">📷</div>
+            <h3 data-i18n="ob1Title">1. Allow Camera</h3>
+            <p data-i18n="ob1Desc">Grant camera access so CHOCO·AI can bring your chocolate card to life in Augmented Reality.</p>
+          </div>
+          <div class="ob-slide">
+            <div class="ob-icon">🎯</div>
+            <h3 data-i18n="ob2Title">2. Point at Card</h3>
+            <p data-i18n="ob2Desc">Align the gold frame with your CHOCO·AI card and watch the golden wrapper peel away.</p>
+          </div>
+          <div class="ob-slide">
+            <div class="ob-icon">▶️</div>
+            <h3 data-i18n="ob3Title">3. Tap Play &amp; Explore</h3>
+            <p data-i18n="ob3Desc">Tap Play for sound, tap floating badges for offers, or open the live Catalog anytime.</p>
+          </div>
+        </div>
+      </div>
+      <div class="ob-dots" id="obDots">
+        <span class="ob-dot active"></span><span class="ob-dot"></span><span class="ob-dot"></span>
+      </div>
+      <div class="ob-actions">
+        <button class="btn-ghost" id="obSkip" data-i18n="skip">Skip</button>
+        <button class="btn-gold" id="obNext" data-i18n="next">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Camera Permission Helper Modal -->
+  <div class="overlay-modal" id="cameraDeniedModal">
+    <div class="overlay-card">
+      <div class="ob-icon">🔒</div>
+      <h3 style="margin:0 0 8px;font-family:'Cormorant Garamond',serif;font-size:26px;color:#F0D687;" data-i18n="camDeniedTitle">Camera Access Needed</h3>
+      <p style="margin:0 0 16px;font-size:13px;line-height:1.6;color:rgba(245,239,230,0.8);" data-i18n="camDeniedDesc">
+        To view the AR chocolate showcase, tap the lock icon in your browser's address bar, allow Camera permissions, and tap Retry. You can still browse the Catalog below.
+      </p>
+      <div class="ob-actions">
+        <button class="btn-gold" id="camRetryBtn" data-i18n="retry">Retry Camera</button>
+        <button class="btn-ghost" id="camCatalogBtn" data-i18n="browseCatalog">Open Catalog</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Offline Fallback Modal -->
+  <div class="overlay-modal" id="offlineOverlay">
+    <div class="overlay-card">
+      <div class="ob-icon">📡</div>
+      <h3 style="margin:0 0 8px;font-family:'Cormorant Garamond',serif;font-size:26px;color:#F0D687;" data-i18n="offlineTitle">You're Offline</h3>
+      <p style="margin:0 0 16px;font-size:13px;line-height:1.6;color:rgba(245,239,230,0.8);" data-i18n="offlineDesc">
+        Connect to the internet to sync the latest chocolates and AR video from Drive.
+      </p>
+      <button class="btn-gold" id="offlineRetryBtn" data-i18n="retry">Retry</button>
+    </div>
+  </div>
+
+  <!-- ================= Website-style Catalog ================= -->
+  <div id="catalogStage">
+    <div id="catalogSheet">
+
+      <header class="site-nav" id="siteNav">
+        <div class="container nav-inner">
+          <div class="nav-logo">CHOCO·AI</div>
+          <nav class="nav-links">
+            <a data-scroll="top" data-i18n="home">Home</a>
+            <a data-scroll="collection" data-i18n="collection">Collection</a>
+            <a data-scroll="promise" data-i18n="whyUs">Why Us</a>
+            <a data-scroll="contact" data-i18n="contact">Contact</a>
+          </nav>
+          <div class="nav-spacer"></div>
+          <div class="nav-search">
+            <span class="search-icon">🔍</span>
+            <input type="search" id="searchInput" placeholder="Search chocolates…" autocomplete="off" />
+            <div class="search-suggestions" id="suggDesktop"></div>
+          </div>
+          <div class="nav-controls">
+            <select class="icon-pill" id="seasonSelect" aria-label="Seasonal Theme" title="Theme">
+              <option value="auto">✨ Auto</option>
+              <option value="default">🍫 Classic</option>
+              <option value="diwali">🪔 Diwali</option>
+              <option value="pongal">🌾 Pongal</option>
+              <option value="valentine">💝 Valentine</option>
+              <option value="christmas">🎄 Xmas</option>
+            </select>
+            <button class="icon-pill" id="modeToggleBtn" title="Light/Dark Mode" aria-label="Light/Dark Mode">☀️</button>
+            <button class="icon-pill" id="langToggleBtn" title="English / Tamil">தமிழ்</button>
+          </div>
+          <button class="close-btn" id="closeCatalogBtn" aria-label="Close catalog">✕ <span data-i18n="close">Close</span></button>
+        </div>
+        <div class="mobile-search">
+          <span class="search-icon">🔍</span>
+          <input type="search" id="searchInputMobile" placeholder="Search chocolates…" autocomplete="off" />
+          <div class="search-suggestions" id="suggMobile"></div>
+        </div>
+      </header>
+
+      <section class="hero" id="catTop">
+        <div class="hero-parallax" id="heroParallax" aria-hidden="true">
+          <div class="p-shape p-s1" data-speed="0.18"></div>
+          <div class="p-shape p-s2" data-speed="0.32"></div>
+          <div class="p-shape p-s3" data-speed="0.25"></div>
+          <div class="p-shape p-s4" data-speed="0.12"></div>
+        </div>
+        <div class="container">
+          <div class="greeting-pill" id="heroGreeting">Good evening, treat yourself</div>
+          <div class="eyebrow" data-i18n="eyebrow">Fine Chocolates · Handcrafted</div>
+          <h1 data-i18n="heroTitle">The Collection</h1>
+          <p data-i18n="heroDesc">Gift boxes, classic homemade favourites, gourmet flavours, nutty delights and luxury creations — explore our latest chocolates, updated live.</p>
+          <div class="hero-cta">
+            <button class="btn-gold" id="heroBrowse" data-i18n="browseCollection">Browse Collection</button>
+            <button class="btn-ghost" id="heroPremium" data-i18n="premiumEdit">Premium Edit</button>
+          </div>
+          <div class="hero-stats">
+            <div class="stat"><b id="statTotal">—</b><span data-i18n="treats">Treats</span></div>
+            <div class="stat"><b id="statCat">5</b><span data-i18n="categories">Categories</span></div>
+            <div class="stat"><b>AR</b><span data-i18n="tryView">Try &amp; View</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recently Viewed Row -->
+      <section class="container" id="recentSection">
+        <div class="mini-row-head" data-i18n="recentlyViewed">Recently Viewed</div>
+        <div class="recent-row" id="recentRow"></div>
+      </section>
+
+      <section id="catCollection">
+        <div class="container">
+          <div class="section-head reveal">
+            <h2 class="section-title"><small data-i18n="ourTreats">Our Treats</small><span data-i18n="shopCollection">Shop the Collection</span></h2>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="container toolbar-inner">
+            <div class="category-scroll" id="categoryTabs">
+              <span class="chip-slider" id="chipSlider"></span>
+              <button class="category-chip active" data-cat="all"><span data-i18n="catAll">All</span><span class="count" id="cnt-all"></span></button>
+              <button class="category-chip fav-chip" data-cat="fav">♥ <span data-i18n="catFav">Favourites</span><span class="count" id="cnt-fav">0</span></button>
+              <button class="category-chip" data-cat="gift"><span data-i18n="catGift">Gift &amp; Souvenir</span><span class="count" id="cnt-gift"></span></button>
+              <button class="category-chip" data-cat="classic"><span data-i18n="catClassic">Classic Homemade</span><span class="count" id="cnt-classic"></span></button>
+              <button class="category-chip" data-cat="flavoured"><span data-i18n="catFlavoured">Flavoured &amp; Gourmet</span><span class="count" id="cnt-flavoured"></span></button>
+              <button class="category-chip" data-cat="nuts"><span data-i18n="catNuts">Nuts &amp; Dry Fruit</span><span class="count" id="cnt-nuts"></span></button>
+              <button class="category-chip" data-cat="premium"><span data-i18n="catPremium">Premium &amp; Luxury</span><span class="count" id="cnt-premium"></span></button>
+            </div>
+            <div class="toolbar-right">
+              <button class="icon-pill" id="viewToggleBtn" title="Toggle Grid / List View" aria-label="Toggle View">☰</button>
+              <label class="sort-wrap"><span data-i18n="sort">Sort</span>
+                <select id="sortSelect">
+                  <option value="default">Featured</option>
+                  <option value="az">Name A–Z</option>
+                  <option value="za">Name Z–A</option>
+                </select>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="container">
+          <div class="result-line" id="resultLine"></div>
+          <div class="catalog-grid" id="catalogList"></div>
+        </div>
+      </section>
+
+      <section class="promise" id="catPromise">
+        <div class="container promise-grid">
+          <div class="promise-item reveal"><div class="ic">🍫</div><h4 data-i18n="p1Title">Finest Ingredients</h4><p data-i18n="p1Desc">Every chocolate is made with carefully selected cocoa and fresh ingredients.</p></div>
+          <div class="promise-item reveal"><div class="ic">🎁</div><h4 data-i18n="p2Title">Gifts for Every Occasion</h4><p data-i18n="p2Desc">Beautiful boxes and souvenirs for celebrations, festivals and special moments.</p></div>
+          <div class="promise-item reveal"><div class="ic">📱</div><h4 data-i18n="p3Title">AR Experience</h4><p data-i18n="p3Desc">Scan the drive card to see our latest showcase come alive.</p></div>
+        </div>
+      </section>
+
+      <footer class="site-footer" id="catContact">
+        <div class="container">
+          <div class="logo">CHOCO·AI</div>
+          <div class="footer-links">
+            <a data-cat-link="gift" data-i18n="catGift">Gift &amp; Souvenir</a>
+            <a data-cat-link="classic" data-i18n="catClassic">Classic</a>
+            <a data-cat-link="flavoured" data-i18n="catFlavoured">Gourmet</a>
+            <a data-cat-link="nuts" data-i18n="catNuts">Nuts &amp; Dry Fruit</a>
+            <a data-cat-link="premium" data-i18n="catPremium">Premium</a>
+          </div>
+          <p>© <span id="yr"></span> CHOCO·AI · All rights reserved</p>
+        </div>
+      </footer>
+    </div>
+
+    <button id="backToTop" aria-label="Back to top">↑</button>
+
+    <!-- PWA Install Banner -->
+    <div id="pwaBanner">
+      <div class="pwa-txt"><b data-i18n="installTitle">Install CHOCO·AI</b><span data-i18n="installDesc">Add to Home Screen for instant AR &amp; catalog access.</span></div>
+      <div style="display:flex;gap:6px;">
+        <button class="btn-gold" id="pwaInstallBtn" style="padding:8px 14px;font-size:11px;" data-i18n="installBtn">Install</button>
+        <button class="icon-pill" id="pwaDismissBtn" aria-label="Dismiss">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Detail Modal -->
+  <div id="productModal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div class="grabber"><i></i><small data-i18n="swipeClose">Swipe down to close</small></div>
+      <button class="modal-close" id="modalClose" aria-label="Close">✕</button>
+      <div class="modal-img" id="modalImgWrap">
+        <span class="zoom-hint" data-i18n="pinchZoom">Pinch / Double-tap to zoom</span>
+        <img id="modalImg" alt="" />
+        <div class="gallery-dots" id="galleryDots" style="display:none;"></div>
+      </div>
+      <div class="modal-info">
+        <div class="cat" id="modalCat"></div>
+        <h2 id="modalName"></h2>
+        <p data-i18n="modalDesc">A delicious treat from our chocolate collection. Visit the store or contact us to enquire about availability, gift packing, customisation and pricing.</p>
+        <div class="modal-actions">
+          <button class="btn-gold" id="modalEnquire" data-i18n="enquireNow">Enquire Now</button>
+          <button class="btn-ghost" id="modalFav">♡ Save</button>
+          <button class="btn-ghost" id="modalShare" data-i18n="share">↗ Share</button>
+        </div>
+      </div>
+      <div class="modal-related" id="modalRelatedWrap" style="display:none;">
+        <div class="mini-row-head" data-i18n="relatedTreats">Related Treats</div>
+        <div class="related-strip" id="modalRelated"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Long-Press Quick View -->
+  <div id="quickViewOverlay">
+    <img id="qvImg" alt="" />
+    <div class="qv-title" id="qvTitle"></div>
+    <small data-i18n="tapDismiss">Tap anywhere to close</small>
+  </div>
+
+  <!-- ================= A-FRAME / MINDAR SCENE ================= -->
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind; uiLoading: no; uiError: no; filterMinCF:0.0001; filterBeta: 0.001;"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+    renderer="antialias: true; alpha: true"
+    cursor="rayOrigin: mouse; fuse: false"
+    raycaster="objects: .ar-clickable">
+
+    <a-assets>
+      <video id="driveVideo" playsinline webkit-playsinline preload="auto" loop crossorigin="anonymous"></video>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity id="target1" mindar-image-target="targetIndex: 0" visible="false">
+      <!-- Elastic pop-in group -->
+      <a-entity id="videoGroup" visible="false" scale="0.001 0.001 0.001"
+        animation__pop="property: scale; from: 0.001 0.001 0.001; to: 1 1 1; dur: 900; easing: easeOutElastic; startEvents: popin">
+
+        <!-- Glowing gold frame -->
+        <a-plane id="glowFrame" width="1.08" height="1.08" position="0 0 -0.004"
+          material="shader: flat; color: #D4AF37; transparent: true; opacity: 0.9"
+          animation__glow="property: material.opacity; from: 0.3; to: 1; dir: alternate; dur: 1100; easing: easeInOutSine; loop: true">
+        </a-plane>
+
+        <!-- Main Video Plane -->
+        <a-plane id="videoPlane" width="1" height="1"
+          material="src: #driveVideo; side: double; transparent: false">
+        </a-plane>
+
+        <!-- Chocolate Bar Golden Foil "Unwrap" Intro Halves -->
+        <a-plane id="wrapperLeft" width="0.52" height="1.04" position="-0.25 0 0.012"
+          material="shader: flat; color: #D4AF37; metalness: 0.6; transparent: true; opacity: 1"
+          animation__peelpos="property: position; from: -0.25 0 0.012; to: -0.95 0 0.12; dur: 950; delay: 220; easing: easeInOutCubic; startEvents: unwrap"
+          animation__peelrot="property: rotation; from: 0 0 0; to: 0 -75 0; dur: 950; delay: 220; easing: easeInOutCubic; startEvents: unwrap"
+          animation__peelfade="property: material.opacity; from: 1; to: 0; dur: 600; delay: 620; easing: easeOutQuad; startEvents: unwrap">
+        </a-plane>
+        <a-plane id="wrapperRight" width="0.52" height="1.04" position="0.25 0 0.012"
+          material="shader: flat; color: #E8C55A; metalness: 0.6; transparent: true; opacity: 1"
+          animation__peelpos="property: position; from: 0.25 0 0.012; to: 0.95 0 0.12; dur: 950; delay: 220; easing: easeInOutCubic; startEvents: unwrap"
+          animation__peelrot="property: rotation; from: 0 0 0; to: 0 75 0; dur: 950; delay: 220; easing: easeInOutCubic; startEvents: unwrap"
+          animation__peelfade="property: material.opacity; from: 1; to: 0; dur: 600; delay: 620; easing: easeOutQuad; startEvents: unwrap">
+        </a-plane>
+
+        <!-- Floating 3D Low-Poly Chocolate Pieces -->
+        <a-box position="-0.68 0.34 0.06" width="0.14" height="0.14" depth="0.045" color="#4A2511"
+          animation__rot="property: rotation; to: 360 360 0; dur: 7000; easing: linear; loop: true"
+          animation__bob="property: position; from: -0.68 0.30 0.06; to: -0.68 0.39 0.08; dir: alternate; dur: 2200; easing: easeInOutSine; loop: true"></a-box>
+        <a-box position="0.68 -0.32 0.06" width="0.13" height="0.13" depth="0.045" color="#5C2E14"
+          animation__rot="property: rotation; to: -360 360 180; dur: 8200; easing: linear; loop: true"
+          animation__bob="property: position; from: 0.68 -0.36 0.06; to: 0.68 -0.26 0.09; dir: alternate; dur: 2500; easing: easeInOutSine; loop: true"></a-box>
+        <a-box position="0.66 0.36 0.04" width="0.09" height="0.09" depth="0.035" color="#D4AF37"
+          animation__rot="property: rotation; to: 180 -360 360; dur: 6400; easing: linear; loop: true"
+          animation__bob="property: position; from: 0.66 0.32 0.04; to: 0.66 0.40 0.06; dir: alternate; dur: 1900; easing: easeInOutSine; loop: true"></a-box>
+
+        <!-- Floating Cocoa & Gold Particles (populated via JS) -->
+        <a-entity id="cocoaParticles"></a-entity>
+
+        <!-- Tappable AR Info Hotspots -->
+        <a-entity class="ar-clickable" id="hotspotFlavour" position="-0.56 -0.44 0.07"
+          animation="property: scale; from: 0.92 0.92 0.92; to: 1.08 1.08 1.08; dir: alternate; dur: 1100; easing: easeInOutSine; loop: true">
+          <a-circle radius="0.075" color="#D4AF37" material="shader: flat; opacity: 0.95"></a-circle>
+          <a-text value="NEW" align="center" color="#1a0f0a" width="0.55" position="0 0 0.005"></a-text>
+        </a-entity>
+
+        <a-entity class="ar-clickable" id="hotspotGift" position="0.56 0.44 0.07"
+          animation="property: scale; from: 0.92 0.92 0.92; to: 1.08 1.08 1.08; dir: alternate; dur: 1250; easing: easeInOutSine; loop: true">
+          <a-circle radius="0.075" color="#6b3a1f" material="shader: flat; opacity: 0.95"></a-circle>
+          <a-ring radius-inner="0.073" radius-outer="0.084" color="#F0D687" material="shader: flat" position="0 0 0.002"></a-ring>
+          <a-text value="GIFT" align="center" color="#F0D687" width="0.5" position="0 0 0.005"></a-text>
+        </a-entity>
+
+      </a-entity>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    /* ======================================================
+       CONFIGURATION
+    ====================================================== */
+    const API_KEY = "AIzaSyA_mBu6emRKASkqHpLtwkdBiCQKYO3rvcw";
+    const FOLDER_ID = "1jRyVReP4cq7yk1VqwdFCMt0w4on4S77Q";
+    const WHATSAPP_NUMBER = "917019743880";
+    const NEW_DAYS = 7;
+
+    const CATALOG_FOLDERS = {
+      gift:      "17ySewgdqCobAmmA2GJQr26dTOZ2_i_QP",
+      classic:   "1MNyNI74BCiWLIYlLa47_rdNOk9VyPAv6",
+      flavoured: "1W3asJarlw4jzVYxiHH3572tR34qqZrrl",
+      nuts:      "1nKxR0fYLYx7_NE068EbglJLVyOJ6Uc4L",
+      premium:   "1Dmdcl3emFUjStD4-fQczCHly_SXxnI46"
+    };
+
+    /* ======================================================
+       I18N (ENGLISH & TAMIL)
+    ====================================================== */
+    const I18N = {
+      en: {
+        cameraAr: "Camera & AR", alignCard: "Align with drive card", moveCloser: "Move closer to the card",
+        catalog: "Catalog", home: "Home", collection: "Collection", whyUs: "Why Us", contact: "Contact",
+        close: "Close", eyebrow: "Fine Chocolates · Handcrafted", heroTitle: "The Collection",
+        heroDesc: "Gift boxes, classic homemade favourites, gourmet flavours, nutty delights and luxury creations — explore our latest chocolates, updated live.",
+        browseCollection: "Browse Collection", premiumEdit: "Premium Edit", treats: "Treats",
+        categories: "Categories", tryView: "Try & View", recentlyViewed: "Recently Viewed",
+        ourTreats: "Our Treats", shopCollection: "Shop the Collection", sort: "Sort",
+        catAll: "All", catFav: "Favourites", catGift: "Gift & Souvenir", catClassic: "Classic Homemade",
+        catFlavoured: "Flavoured & Gourmet", catNuts: "Nuts & Dry Fruit", catPremium: "Premium & Luxury",
+        p1Title: "Finest Ingredients", p1Desc: "Every chocolate is made with carefully selected cocoa and fresh ingredients.",
+        p2Title: "Gifts for Every Occasion", p2Desc: "Beautiful boxes and souvenirs for celebrations, festivals and special moments.",
+        p3Title: "AR Experience", p3Desc: "Scan the drive card to see our latest showcase come alive.",
+        swipeClose: "Swipe down to close", pinchZoom: "Pinch / Double-tap to zoom",
+        modalDesc: "A delicious treat from our chocolate collection. Visit the store or contact us to enquire about availability, gift packing, customisation and pricing.",
+        enquireNow: "Enquire Now", share: "↗ Share", relatedTreats: "Related Treats", tapDismiss: "Tap anywhere to close",
+        ob1Title: "1. Allow Camera", ob1Desc: "Grant camera access so CHOCO·AI can bring your chocolate card to life in Augmented Reality.",
+        ob2Title: "2. Point at Card", ob2Desc: "Align the gold frame with your CHOCO·AI card and watch the golden wrapper peel away.",
+        ob3Title: "3. Tap Play & Explore", ob3Desc: "Tap Play for sound, tap floating badges for offers, or open the live Catalog anytime.",
+        skip: "Skip", next: "Next", start: "Let's Go",
+        camDeniedTitle: "Camera Access Needed", camDeniedDesc: "Tap the lock icon in your browser's address bar, allow Camera permissions, and tap Retry. You can still browse the Catalog below.",
+        retry: "Retry", browseCatalog: "Open Catalog",
+        offlineTitle: "You're Offline", offlineDesc: "Connect to the internet to sync the latest chocolates and AR video from Drive.",
+        installTitle: "Install CHOCO·AI", installDesc: "Add to Home Screen for instant AR & catalog access.", installBtn: "Install",
+        greetMorning: "Good morning, start sweet ☀️", greetAfternoon: "Good afternoon, time for a treat 🍫", greetEvening: "Good evening, treat yourself ✨",
+        searchPh: "Search chocolates…", viewDetails: "View details",
+        emptyFav: "No favourites yet — tap the ♥ on any chocolate to save it.",
+        emptySearch: "No chocolates found. Try another search or category."
+      },
+      ta: {
+        cameraAr: "கேமரா & AR", alignCard: "கார்டை நேராகக் காட்டவும்", moveCloser: "கார்டுக்கு அருகில் செல்லவும்",
+        catalog: "பட்டியல்", home: "முகப்பு", collection: "தொகுப்பு", whyUs: "சிறப்பு", contact: "தொடர்பு",
+        close: "மூடு", eyebrow: "சுவையான சாக்லேட்டுகள் · கைவினை", heroTitle: "சாக்லேட் தொகுப்பு",
+        heroDesc: "பரிசுப் பெட்டிகள், வீட்டு சாக்லேட்டுகள், சுவையான வகைகள், நட்ஸ் மற்றும் பிரீமியம் சாக்லேட்டுகள் — உடனுக்குடன் புதுப்பிக்கப்படும்.",
+        browseCollection: "தொகுப்பைப் பார்க்க", premiumEdit: "பிரீமியம் வகை", treats: "வகைகள்",
+        categories: "பிரிவுகள்", tryView: "AR காட்சி", recentlyViewed: "சமீபத்தில் பார்த்தவை",
+        ourTreats: "எங்கள் சுவைகள்", shopCollection: "சாக்லேட் தேர்வு", sort: "வரிசை",
+        catAll: "அனைத்தும்", catFav: "பிடித்தவை", catGift: "பரிசுப் பெட்டிகள்", catClassic: "கிளாசிக்",
+        catFlavoured: "சுவை & கௌர்மே", catNuts: "நட்ஸ் & உலர் பழம்", catPremium: "பிரீமியம் & லக்சுரி",
+        p1Title: "தரமான பொருட்கள்", p1Desc: "தேர்ந்தெடுக்கப்பட்ட கோக்கோ மற்றும் புதிய பொருட்களால் தயாரிக்கப்பட்டது.",
+        p2Title: "எல்லா நிகழ்வுகளுக்கும் பரிசு", p2Desc: "பண்டிகைகள் மற்றும் சிறப்பு தருணங்களுக்கான அழகிய பரிசுப் பெட்டிகள்.",
+        p3Title: "AR அனுபவம்", p3Desc: "கார்டை ஸ்கேன் செய்து நேரடி வீடியோவைப் பாருங்கள்.",
+        swipeClose: "மூட கீழே இழுக்கவும்", pinchZoom: "பெரிதாக்க பிஞ்ச் செய்யவும்",
+        modalDesc: "எங்கள் சாக்லேட் தொகுப்பிலிருந்து சுவையான தேர்வு. விலை, பரிசு பேக்கிங் மற்றும் ஆர்டர்களுக்கு எங்களைத் தொடர்பு கொள்ளவும்.",
+        enquireNow: "விசாரிக்கவும்", share: "↗ பகிர்", relatedTreats: "தொடர்புடையவை", tapDismiss: "மூட தட்டவும்",
+        ob1Title: "1. கேமரா அனுமதி", ob1Desc: "AR அனுபவத்திற்கு கேமரா அனுமதியை வழங்கவும்.",
+        ob2Title: "2. கார்டை ஸ்கேன் செய்", ob2Desc: "தங்க கட்டத்தில் கார்டை வைத்தால் சாக்லேட் உறை திறக்கும்.",
+        ob3Title: "3. வீடியோ & பட்டியல்", ob3Desc: "Play தட்டி வீடியோ பார்க்கவும் அல்லது பட்டியலைத் திறக்கவும்.",
+        skip: "தவிர்", next: "அடுத்து", start: "தொடங்கு",
+        camDeniedTitle: "கேமரா அனுமதி தேவை", camDeniedDesc: "உங்கள் பிரவுசரில் கேமரா அனுமதியை இயக்கி மீண்டும் முயற்சிக்கவும். கீழே பட்டியலைப் பார்க்கலாம்.",
+        retry: "மீண்டும் முயற்சி", browseCatalog: "பட்டியல் திற",
+        offlineTitle: "இணைய இணைப்பு இல்லை", offlineDesc: "சாக்லேட்டுகளைப் பார்க்க இணையத்தை இணைக்கவும்.",
+        installTitle: "CHOCO·AI ஆப்", installDesc: "விரைவான அணுகலுக்கு முகப்புத் திரையில் சேர்க்கவும்.", installBtn: "சேர்",
+        greetMorning: "காலை வணக்கம், இனிமையாகத் தொடங்குங்கள் ☀️", greetAfternoon: "மதிய வணக்கம், சாக்லேட் நேரம் 🍫", greetEvening: "மாலை வணக்கம், சுவைத்து மகிழுங்கள் ✨",
+        searchPh: "சாக்லேட் தேடவும்…", viewDetails: "விவரம் பார்க்க",
+        emptyFav: "பிடித்தவை இன்னும் இல்லை — ♥ தட்டி சேமிக்கவும்.",
+        emptySearch: "சாக்லேட் எதுவும் கிடைக்கவில்லை."
+      }
+    };
+
+    const CATEGORY_LABELS = {
+      gift: "Gift & Souvenir", classic: "Classic Homemade", flavoured: "Flavoured & Gourmet",
+      nuts: "Nuts & Dry Fruit", premium: "Premium & Luxury"
+    };
+
+    let CATALOG_ITEMS = [];
+    let currentLang = localStorage.getItem("chocoai_lang") || "en";
+    let soundEnabled = localStorage.getItem("chocoai_sound") !== "off";
+    const REDUCED = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function t(key) { return (I18N[currentLang] && I18N[currentLang][key]) || I18N.en[key] || key; }
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+    function buzz(pattern) { try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {} }
+
+    /* ======================================================
+       WEB AUDIO: SOFT CHOCOLATE "SNAP" SOUND CUE
+    ====================================================== */
+    let audioCtx = null;
+    function playChocoSnap() {
+      if (!soundEnabled) return;
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        if (!audioCtx) audioCtx = new AC();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        const now = audioCtx.currentTime;
+
+        // Crisp noise burst (chocolate snap)
+        const bufSize = Math.floor(audioCtx.sampleRate * 0.055);
+        const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < bufSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.22));
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buf;
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "bandpass";
+        filter.frequency.setValueAtTime(1600, now);
+        filter.Q.setValueAtTime(1.4, now);
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.32, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
+        noise.connect(filter).connect(gain).connect(audioCtx.destination);
+        noise.start(now);
+
+        // Warm woody pop undertone
+        const osc = audioCtx.createOscillator();
+        const og = audioCtx.createGain();
+        osc.type = "triangle";
+        osc.frequency.setValueAtTime(340, now);
+        osc.frequency.exponentialRampToValueAtTime(110, now + 0.045);
+        og.gain.setValueAtTime(0.18, now);
+        og.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+        osc.connect(og).connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.05);
+      } catch (e) {}
+    }
+
+    /* ======================================================
+       GOLD SPARKLE CONFETTI
+    ====================================================== */
+    function spawnConfetti(x, y) {
+      if (REDUCED) return;
+      const layer = document.querySelector("#confettiLayer");
+      const colors = ["#D4AF37", "#F0D687", "#FFF4CC", "#FF5A6E", "#8A5230"];
+      const cx = x || window.innerWidth / 2;
+      const cy = y || window.innerHeight / 2;
+      for (let i = 0; i < 22; i++) {
+        const p = document.createElement("span");
+        p.className = "sparkle-p";
+        const ang = Math.random() * Math.PI * 2;
+        const dist = 45 + Math.random() * 110;
+        p.style.left = cx + "px";
+        p.style.top = cy + "px";
+        p.style.background = colors[i % colors.length];
+        p.style.setProperty("--tx", Math.cos(ang) * dist + "px");
+        p.style.setProperty("--ty", (Math.sin(ang) * dist - 30) + "px");
+        p.style.setProperty("--rot", (Math.random() * 360) + "deg");
+        layer.appendChild(p);
+        setTimeout(() => p.remove(), 950);
+      }
+    }
+
+    /* ======================================================
+       THEMES (SEASONAL AUTO/MANUAL + LIGHT/DARK + GREETING)
+    ====================================================== */
+    function detectSeason() {
+      const d = new Date(), m = d.getMonth() + 1, day = d.getDate();
+      if (m === 1 && day >= 10 && day <= 20) return "pongal";
+      if (m === 2 && day >= 7 && day <= 18) return "valentine";
+      if ((m === 10 && day >= 15) || (m === 11 && day <= 15)) return "diwali";
+      if (m === 12 && day >= 15) return "christmas";
+      return "default";
+    }
+
+    function applySeason(val) {
+      const resolved = val === "auto" ? detectSeason() : val;
+      document.documentElement.setAttribute("data-season", resolved);
+      localStorage.setItem("chocoai_season", val);
+    }
+
+    function applyMode(mode) {
+      document.documentElement.setAttribute("data-mode", mode);
+      localStorage.setItem("chocoai_mode", mode);
+      const btn = document.querySelector("#modeToggleBtn");
+      if (btn) btn.textContent = mode === "dark" ? "☀️" : "🌙";
+    }
+
+    function updateGreeting() {
+      const hr = new Date().getHours();
+      const key = hr < 12 ? "greetMorning" : hr < 17 ? "greetAfternoon" : "greetEvening";
+      const el = document.querySelector("#heroGreeting");
+      if (el) el.textContent = t(key);
+    }
+
+    function applyLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem("chocoai_lang", lang);
+      document.documentElement.lang = lang;
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const k = el.getAttribute("data-i18n");
+        if (t(k)) el.textContent = t(k);
+      });
+      const ph = t("searchPh");
+      const s1 = document.querySelector("#searchInput"), s2 = document.querySelector("#searchInputMobile");
+      if (s1) s1.placeholder = ph;
+      if (s2) s2.placeholder = ph;
+      const lb = document.querySelector("#langToggleBtn"), hlb = document.querySelector("#hudLangBtn");
+      if (lb) lb.textContent = lang === "en" ? "தமிழ்" : "EN";
+      if (hlb) hlb.textContent = lang === "en" ? "த" : "EN";
+      updateGreeting();
+    }
+
+    /* ======================================================
+       STORAGE: FAVOURITES & RECENTLY VIEWED
+    ====================================================== */
+    const FAV_KEY = "chocoai_favs", RECENT_KEY = "chocoai_recent";
+    let FAVS = new Set(), RECENT = [];
+    try { FAVS = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || "[]")); } catch (e) {}
+    try { RECENT = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]"); } catch (e) {}
+    function saveFavs() { try { localStorage.setItem(FAV_KEY, JSON.stringify([...FAVS])); } catch (e) {} }
+    function addRecent(id) {
+      RECENT = [id, ...RECENT.filter(x => x !== id)].slice(0, 8);
+      try { localStorage.setItem(RECENT_KEY, JSON.stringify(RECENT)); } catch (e) {}
+    }
+
+    /* ======================================================
+       DYNAMIC PWA MANIFEST
+    ====================================================== */
+    (function setupPWA() {
+      try {
+        const manifest = {
+          name: "CHOCO·AI Live AR & Catalog",
+          short_name: "CHOCO·AI",
+          start_url: location.href,
+          display: "standalone",
+          background_color: "#1a0f0a",
+          theme_color: "#D4AF37",
+          icons: [{
+            src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="36" fill="#1a0f0a"/><text x="96" y="122" font-size="96" text-anchor="middle">🍫</text></svg>'),
+            sizes: "192x192", type: "image/svg+xml"
+          }]
+        };
+        const blob = new Blob([JSON.stringify(manifest)], { type: "application/manifest+json" });
+        const link = document.createElement("link");
+        link.rel = "manifest"; link.href = URL.createObjectURL(blob);
+        document.head.appendChild(link);
+      } catch (e) {}
+    })();
+
+    /* ======================================================
+       LIVE DRIVE VIDEO & CATALOG SYNC (WITH GALLERY GROUPING)
+    ====================================================== */
+    async function getLatestVideoId() {
+      try {
+        const url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+mimeType+contains+'video/'&orderBy=modifiedTime desc&pageSize=1&fields=files(id)&key=${API_KEY}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        return (data.files && data.files.length > 0) ? data.files[0].id : null;
+      } catch (error) {
+        console.error("Drive Fetch Error:", error);
+        return null;
+      }
+    }
+
+    async function fetchDriveCatalog() {
+      const grouped = new Map();
+      const now = Date.now();
+      const fetchPromises = Object.entries(CATALOG_FOLDERS).map(async ([catKey, folderId]) => {
+        try {
+          const query = encodeURIComponent(`'${folderId}' in parents and mimeType contains 'image/' and trashed=false`);
+          const url = `https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id,name,createdTime)&pageSize=100&key=${API_KEY}`;
+          const res = await fetch(url);
+          const data = await res.json();
+
+          if (data.files && data.files.length > 0) {
+            data.files.forEach(file => {
+              const rawName = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ").trim();
+              // Group multi-photo items like "Dark Truffle 1", "Dark Truffle 2" into a swipeable gallery
+              const baseName = rawName.replace(/\s+\d+$/, "").trim() || rawName;
+              const groupKey = `${catKey}::${baseName.toLowerCase()}`;
+              const created = file.createdTime ? new Date(file.createdTime).getTime() : 0;
+              const isNew = created > 0 && (now - created) < NEW_DAYS * 86400000;
+              const thumb = `https://drive.google.com/thumbnail?id=${file.id}&sz=w800`;
+              const large = `https://drive.google.com/thumbnail?id=${file.id}&sz=w1600`;
+
+              if (grouped.has(groupKey)) {
+                const existing = grouped.get(groupKey);
+                existing.gallery.push(large);
+                if (isNew) existing.isNew = true;
+              } else {
+                grouped.set(groupKey, {
+                  id: file.id,
+                  name: baseName,
+                  category: catKey,
+                  categoryLabel: CATEGORY_LABELS[catKey],
+                  isNew,
+                  img: thumb,
+                  imgLarge: large,
+                  gallery: [large]
+                });
+              }
+            });
+          }
+        } catch (err) {
+          console.error(`Error loading category: ${catKey}`, err);
+        }
+      });
+
+      await Promise.all(fetchPromises);
+      CATALOG_ITEMS = Array.from(grouped.values());
+      return CATALOG_ITEMS;
+    }
+
+    let rawStream = null, rawStarting = false;
+
+    function stopRawCameraFeed() {
+      const rawFeed = document.querySelector("#rawCameraFeed");
+      if (rawStream) { rawStream.getTracks().forEach(t => t.stop()); rawStream = null; }
+      if (rawFeed) rawFeed.srcObject = null;
+    }
+
+    async function startRawCameraFeed() {
+      if (rawStream || rawStarting) return;
+      const rawFeed = document.querySelector("#rawCameraFeed");
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return;
+      rawStarting = true;
+      try {
+        let stream;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
+        } catch (envErr) {
+          if (envErr && (envErr.name === "NotAllowedError" || envErr.name === "PermissionDeniedError")) throw envErr;
+          stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        }
+        rawStream = stream;
+        rawFeed.srcObject = stream;
+        await rawFeed.play();
+        document.querySelector("#cameraDeniedModal").classList.remove("show");
+      } catch (anyErr) {
+        console.error("Camera access failed:", anyErr);
+        if (anyErr && (anyErr.name === "NotAllowedError" || anyErr.name === "PermissionDeniedError")) {
+          document.querySelector("#cameraDeniedModal").classList.add("show");
+        }
+      } finally {
+        rawStarting = false;
+      }
+    }
+
+    /* ======================================================
+       APP LIFECYCLE & AR LOGIC
+    ====================================================== */
+    window.addEventListener("load", async () => {
+      const videoEl = document.querySelector("#driveVideo");
+      const videoPlane = document.querySelector("#videoPlane");
+      const videoGroup = document.querySelector("#videoGroup");
+      const wrapperLeft = document.querySelector("#wrapperLeft");
+      const wrapperRight = document.querySelector("#wrapperRight");
+      const target = document.querySelector("#target1");
+      const toggleButton = document.querySelector("#toggleButton");
+      const playRingFg = document.querySelector("#playRingFg");
+      const curtain = document.querySelector("#blackCurtain");
+      const sceneEl = document.querySelector("a-scene");
+      const meltEl = document.querySelector("#meltTransition");
+      const lostHint = document.querySelector("#lostHint");
+      const arInfoBubble = document.querySelector("#arInfoBubble");
+
+      const openCatalogBtn = document.querySelector("#openCatalogBtn");
+      const closeCatalogBtn = document.querySelector("#closeCatalogBtn");
+      const catalogSheet = document.querySelector("#catalogSheet");
+      const siteNav = document.querySelector("#siteNav");
+      const catalogList = document.querySelector("#catalogList");
+      const categoryTabs = document.querySelectorAll(".category-chip");
+      const chipSlider = document.querySelector("#chipSlider");
+      const searchInput = document.querySelector("#searchInput");
+      const searchInputMobile = document.querySelector("#searchInputMobile");
+      const suggDesktop = document.querySelector("#suggDesktop");
+      const suggMobile = document.querySelector("#suggMobile");
+      const sortSelect = document.querySelector("#sortSelect");
+      const resultLine = document.querySelector("#resultLine");
+      const backToTop = document.querySelector("#backToTop");
+
+      const productModal = document.querySelector("#productModal");
+      const modalCard = document.querySelector(".modal-card");
+      const modalImgWrap = document.querySelector("#modalImgWrap");
+      const modalImg = document.querySelector("#modalImg");
+      const galleryDots = document.querySelector("#galleryDots");
+      const modalName = document.querySelector("#modalName");
+      const modalCat = document.querySelector("#modalCat");
+      const modalFav = document.querySelector("#modalFav");
+
+      let isPlaying = false, catalogTransitioning = false, currentLoadedFileId = null;
+      let activeCat = "all", searchTerm = "", sortMode = "default", currentProduct = null;
+      let galleryIdx = 0, lostTimer = null, hasFoundOnce = false;
+      let bubbleCategory = "flavoured";
+
+      document.querySelector("#yr").textContent = new Date().getFullYear();
+
+      // Init saved preferences
+      const savedSeason = localStorage.getItem("chocoai_season") || "auto";
+      document.querySelector("#seasonSelect").value = savedSeason;
+      applySeason(savedSeason);
+      applyMode(localStorage.getItem("chocoai_mode") || "dark");
+      applyLanguage(currentLang);
+      updateSoundIcon();
+
+      /* ---------- Populate Floating Cocoa & Gold Particles in AR ---------- */
+      const particleRoot = document.querySelector("#cocoaParticles");
+      if (particleRoot) {
+        for (let i = 0; i < 14; i++) {
+          const p = document.createElement("a-sphere");
+          const isGold = i % 2 === 0;
+          const x = ((Math.random() - 0.5) * 1.65).toFixed(2);
+          const y = ((Math.random() - 0.5) * 1.45).toFixed(2);
+          const z = (0.03 + Math.random() * 0.14).toFixed(2);
+          const dy = (parseFloat(y) + (Math.random() * 0.16 + 0.06)).toFixed(2);
+          p.setAttribute("radius", isGold ? "0.014" : "0.018");
+          p.setAttribute("color", isGold ? "#F0D687" : "#5C2E14");
+          p.setAttribute("material", "shader: flat; opacity: 0.85; transparent: true");
+          p.setAttribute("position", `${x} ${y} ${z}`);
+          p.setAttribute("animation", `property: position; from: ${x} ${y} ${z}; to: ${x} ${dy} ${z}; dir: alternate; dur: ${1800 + i * 210}; easing: easeInOutSine; loop: true`);
+          particleRoot.appendChild(p);
+        }
+      }
+
+      /* ---------- AR Hotspot Tap-to-Reveal ---------- */
+      function openArBubble(title, desc, cat) {
+        buzz(15);
+        bubbleCategory = cat;
+        document.querySelector("#arBubbleTitle").textContent = title;
+        document.querySelector("#arBubbleDesc").textContent = desc;
+        arInfoBubble.classList.add("show");
+      }
+      document.querySelector("#hotspotFlavour").addEventListener("click", () => {
+        openArBubble("✨ New Gourmet Flavours", "Freshly crafted flavoured chocolates added this week. Tap Explore to see them.", "flavoured");
+      });
+      document.querySelector("#hotspotGift").addEventListener("click", () => {
+        openArBubble("🎁 Gift Box Offers", "Custom festive boxes & souvenirs for every celebration.", "gift");
+      });
+      document.querySelector("#arBubbleClose").addEventListener("click", () => arInfoBubble.classList.remove("show"));
+      document.querySelector("#arBubbleCta").addEventListener("click", () => {
+        arInfoBubble.classList.remove("show");
+        openCatalog();
+        setTimeout(() => setCategory(bubbleCategory, true), 520);
+      });
+
+      /* ---------- Sound Toggle ---------- */
+      function updateSoundIcon() {
+        const btn = document.querySelector("#soundToggleBtn");
+        btn.textContent = soundEnabled ? "🔊" : "🔇";
+        btn.classList.toggle("muted", !soundEnabled);
+      }
+      document.querySelector("#soundToggleBtn").addEventListener("click", () => {
+        soundEnabled = !soundEnabled;
+        localStorage.setItem("chocoai_sound", soundEnabled ? "on" : "off");
+        updateSoundIcon();
+        if (soundEnabled) playChocoSnap();
+        showToast(soundEnabled ? "Sound On" : "Sound Muted", soundEnabled ? "🔊" : "🔇");
+      });
+
+      /* ---------- Theme & Language Controls ---------- */
+      document.querySelector("#seasonSelect").addEventListener("change", (e) => {
+        applySeason(e.target.value);
+        showToast("Theme updated", "🎨");
+      });
+      document.querySelector("#modeToggleBtn").addEventListener("click", () => {
+        const next = document.documentElement.getAttribute("data-mode") === "dark" ? "light" : "dark";
+        applyMode(next);
+        showToast(next === "light" ? "Milk Chocolate Mode" : "Dark Chocolate Mode", next === "light" ? "☀️" : "🌙");
+      });
+      function toggleLang() {
+        applyLanguage(currentLang === "en" ? "ta" : "en");
+        renderCatalog();
+        positionChipSlider();
+      }
+      document.querySelector("#langToggleBtn").addEventListener("click", toggleLang);
+      document.querySelector("#hudLangBtn").addEventListener("click", toggleLang);
+
+      /* ---------- First-Time Onboarding Guide ---------- */
+      const obModal = document.querySelector("#onboardingModal");
+      const obTrack = document.querySelector("#obTrack");
+      const obDots = document.querySelectorAll("#obDots .ob-dot");
+      const obNext = document.querySelector("#obNext");
+      let obStep = 0;
+
+      function setObStep(step) {
+        obStep = Math.max(0, Math.min(2, step));
+        obTrack.style.transform = `translateX(-${obStep * 100}%)`;
+        obDots.forEach((d, idx) => d.classList.toggle("active", idx === obStep));
+        obNext.textContent = obStep === 2 ? t("start") : t("next");
+      }
+      function closeOnboarding() {
+        obModal.classList.remove("show");
+        localStorage.setItem("chocoai_onboarded", "1");
+      }
+      obNext.addEventListener("click", () => { if (obStep < 2) setObStep(obStep + 1); else closeOnboarding(); });
+      document.querySelector("#obSkip").addEventListener("click", closeOnboarding);
+      document.querySelector("#hudHelpBtn").addEventListener("click", () => { setObStep(0); obModal.classList.add("show"); });
+
+      // Swipe support for onboarding
+      let obTouchX = 0;
+      document.querySelector("#obSwipeArea").addEventListener("touchstart", e => { obTouchX = e.touches[0].clientX; }, { passive: true });
+      document.querySelector("#obSwipeArea").addEventListener("touchend", e => {
+        const dx = e.changedTouches[0].clientX - obTouchX;
+        if (dx < -40 && obStep < 2) setObStep(obStep + 1);
+        else if (dx > 40 && obStep > 0) setObStep(obStep - 1);
+      }, { passive: true });
+
+      /* ---------- Camera Permission Helper ---------- */
+      document.querySelector("#camRetryBtn").addEventListener("click", () => {
+        document.querySelector("#cameraDeniedModal").classList.remove("show");
+        startRawCameraFeed();
+      });
+      document.querySelector("#camCatalogBtn").addEventListener("click", () => {
+        document.querySelector("#cameraDeniedModal").classList.remove("show");
+        openCatalog();
+      });
+
+      /* ---------- Offline Detection ---------- */
+      const offlineOverlay = document.querySelector("#offlineOverlay");
+      function syncOnline() { offlineOverlay.classList.toggle("show", !navigator.onLine); }
+      window.addEventListener("offline", syncOnline);
+      window.addEventListener("online", () => {
+        syncOnline();
+        showToast("Back online!", "📡");
+        if (!CATALOG_ITEMS.length) fetchDriveCatalog().then(() => { updateCounts(); renderCatalog(); });
+      });
+      document.querySelector("#offlineRetryBtn").addEventListener("click", () => {
+        if (navigator.onLine) { offlineOverlay.classList.remove("show"); location.reload(); }
+        else showToast("Still offline", "📡");
+      });
+      syncOnline();
+
+      /* ---------- PWA Install Prompt ---------- */
+      let deferredPrompt = null;
+      const pwaBanner = document.querySelector("#pwaBanner");
+      window.addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (!localStorage.getItem("chocoai_pwa_dismissed")) {
+          setTimeout(() => pwaBanner.classList.add("show"), 2500);
+        }
+      });
+      document.querySelector("#pwaInstallBtn").addEventListener("click", async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        pwaBanner.classList.remove("show");
+      });
+      document.querySelector("#pwaDismissBtn").addEventListener("click", () => {
+        pwaBanner.classList.remove("show");
+        localStorage.setItem("chocoai_pwa_dismissed", "1");
+      });
+
+      /* ---------- Staged Loading Bar ---------- */
+      const fillEl = document.querySelector("#chocoFill");
+      const loaderText = document.querySelector("#loaderText");
+      let progress = 0;
+      function setStage(p, text) {
+        if (p <= progress) return;
+        progress = p;
+        fillEl.style.width = p + "%";
+        if (text) loaderText.textContent = text;
+      }
+      setStage(12, "Warming camera…");
+
+      const uiKiller = setInterval(() => {
+        document.querySelectorAll('[class^="mindar-ui"], [id^="mindar-ui"]').forEach(el => el.remove());
+      }, 100);
+
+      startRawCameraFeed().then(() => setStage(40, "Melting chocolate…"));
+
+      /* ---------- Ripple + Tap Haptics ---------- */
+      document.addEventListener("pointerdown", (e) => {
+        const b = e.target.closest(".plan-button, .btn-gold, .btn-ghost, .close-btn, .category-chip, .modal-close, .icon-pill");
+        if (!b) return;
+        buzz(10);
+        const r = b.getBoundingClientRect();
+        const size = Math.max(r.width, r.height) * 2;
+        const s = document.createElement("span");
+        s.className = "ripple";
+        s.style.width = s.style.height = size + "px";
+        s.style.left = (e.clientX - r.left - size / 2) + "px";
+        s.style.top = (e.clientY - r.top - size / 2) + "px";
+        b.appendChild(s);
+        setTimeout(() => s.remove(), 650);
+      });
+
+      /* ---------- Scroll Reveal, Parallax Hero, Sticky Shrink & Back-to-Top ---------- */
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(en => {
+          if (!en.isIntersecting) return;
+          const el = en.target;
+          el.classList.add("in");
+          setTimeout(() => { el.style.transitionDelay = ""; el.classList.add("done"); }, 900);
+          io.unobserve(el);
+        });
+      }, { root: catalogSheet, threshold: 0.08, rootMargin: "0px 0px -24px 0px" });
+      document.querySelectorAll(".reveal").forEach((el, i) => {
+        el.style.transitionDelay = (i % 3) * 80 + "ms";
+        io.observe(el);
+      });
+
+      const pShapes = document.querySelectorAll(".p-shape");
+      let scrollTicking = false;
+      catalogSheet.addEventListener("scroll", () => {
+        if (scrollTicking) return;
+        scrollTicking = true;
+        requestAnimationFrame(() => {
+          const y = catalogSheet.scrollTop;
+          siteNav.classList.toggle("scrolled", y > 36);
+          backToTop.classList.toggle("show", y > 360);
+          if (!REDUCED && y < 600) {
+            pShapes.forEach(sh => {
+              const spd = parseFloat(sh.dataset.speed || 0.2);
+              sh.style.transform = `translateY(${y * spd}px) rotate(${18 + y * 0.05}deg)`;
+            });
+          }
+          scrollTicking = false;
+        });
+      }, { passive: true });
+      backToTop.addEventListener("click", () => catalogSheet.scrollTo({ top: 0, behavior: "smooth" }));
+
+      /* ---------- Count-up Stats ---------- */
+      function countUp(el, to, dur = 1200) {
+        if (REDUCED || !to) { el.textContent = to; return; }
+        const t0 = performance.now();
+        (function step(ts) {
+          const p = Math.min((ts - t0) / dur, 1);
+          el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
+          if (p < 1) requestAnimationFrame(step);
+        })(t0);
+      }
+      function runStats() {
+        if (CATALOG_ITEMS.length) countUp(document.querySelector("#statTotal"), CATALOG_ITEMS.length);
+        countUp(document.querySelector("#statCat"), Object.keys(CATALOG_FOLDERS).length, 850);
+      }
+
+      /* ---------- Video Auto-Crop & Play Progress Ring ---------- */
+      videoEl.addEventListener("loadedmetadata", () => {
+        if (!videoPlane) return;
+        const vw = videoEl.videoWidth, vh = videoEl.videoHeight;
+        if (vw === 0 || vh === 0) return;
+        const aspectRatio = vw / vh;
+        if (aspectRatio > 1) {
+          const repeatX = 1 / aspectRatio;
+          videoPlane.setAttribute("material", `repeat: ${repeatX} 1; offset: ${(1 - repeatX) / 2} 0`);
+        } else {
+          const repeatY = aspectRatio;
+          videoPlane.setAttribute("material", `repeat: 1 ${repeatY}; offset: 0 ${(1 - repeatY) / 2}`);
+        }
+      });
+
+      const RING_CIRC = 2 * Math.PI * 28; // ~175.9
+      videoEl.addEventListener("timeupdate", () => {
+        if (!videoEl.duration) return;
+        const pct = videoEl.currentTime / videoEl.duration;
+        playRingFg.style.strokeDashoffset = (RING_CIRC * (1 - pct)).toFixed(2);
+      });
+
+      /* ---------- Category Chip Gold Slider ---------- */
+      function positionChipSlider() {
+        const activeBtn = document.querySelector(".category-chip.active");
+        if (!activeBtn || !chipSlider) return;
+        chipSlider.style.width = activeBtn.offsetWidth + "px";
+        chipSlider.style.transform = `translateX(${activeBtn.offsetLeft}px)`;
+        chipSlider.classList.toggle("fav-mode", activeBtn.dataset.cat === "fav");
+      }
+      window.addEventListener("resize", positionChipSlider);
+
+      /* ---------- View Toggle (Grid / List) ---------- */
+      document.querySelector("#viewToggleBtn").addEventListener("click", (e) => {
+        const isList = catalogList.classList.toggle("list-view");
+        e.currentTarget.textContent = isList ? "⊞" : "☰";
+        showToast(isList ? "List View" : "Grid View", isList ? "☰" : "⊞");
+      });
+
+      /* ---------- Recently Viewed Rendering ---------- */
+      function renderRecent() {
+        const sec = document.querySelector("#recentSection");
+        const row = document.querySelector("#recentRow");
+        const items = RECENT.map(id => CATALOG_ITEMS.find(x => x.id === id)).filter(Boolean);
+        sec.classList.toggle("has-items", items.length > 0);
+        if (!items.length) return;
+        row.innerHTML = items.map(it => `
+          <div class="recent-chip" data-rid="${it.id}">
+            <img src="${it.img}" alt="${escapeHTML(it.name)}" referrerpolicy="no-referrer" />
+            <span>${escapeHTML(it.name)}</span>
+          </div>`).join("");
+        row.querySelectorAll(".recent-chip").forEach(ch => {
+          ch.addEventListener("click", () => {
+            const found = CATALOG_ITEMS.find(x => x.id === ch.dataset.rid);
+            if (found) openProduct(found);
+          });
+        });
+      }
+
+      /* ---------- Catalog Rendering + Highlight + Tilt + Long-Press Quick View ---------- */
+      function showSkeletons() {
+        catalogList.innerHTML = Array.from({ length: 8 }).map(() => `
+          <div class="catalog-card skeleton">
+            <div class="thumb-wrap"></div>
+            <div class="card-body"><div class="line" style="width:80%"></div><div class="line" style="width:40%"></div></div>
+          </div>`).join("");
+      }
+
+      function updateCounts() {
+        const counts = { all: CATALOG_ITEMS.length };
+        Object.keys(CATALOG_FOLDERS).forEach(k => counts[k] = 0);
+        CATALOG_ITEMS.forEach(i => { if (counts[i.category] !== undefined) counts[i.category]++; });
+        Object.entries(counts).forEach(([k, v]) => {
+          const el = document.querySelector("#cnt-" + k);
+          if (el) el.textContent = v;
+        });
+        if (!catalogSheet.classList.contains("open")) document.querySelector("#statTotal").textContent = counts.all;
+        updateFavCount();
+      }
+
+      function updateFavCount() {
+        const n = CATALOG_ITEMS.filter(i => FAVS.has(i.id)).length;
+        document.querySelector("#cnt-fav").textContent = n;
+      }
+
+      function highlightMatch(text, query) {
+        const safe = escapeHTML(text);
+        if (!query) return safe;
+        const re = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "ig");
+        return safe.replace(re, '<mark class="hl">$1</mark>');
+      }
+
+      function getVisibleItems() {
+        let list;
+        if (activeCat === "all") list = [...CATALOG_ITEMS];
+        else if (activeCat === "fav") list = CATALOG_ITEMS.filter(i => FAVS.has(i.id));
+        else list = CATALOG_ITEMS.filter(i => i.category === activeCat);
+        if (searchTerm) {
+          const q = searchTerm.toLowerCase();
+          list = list.filter(i => i.name.toLowerCase().includes(q) || i.categoryLabel.toLowerCase().includes(q));
+        }
+        if (sortMode === "az") list.sort((a, b) => a.name.localeCompare(b.name));
+        else if (sortMode === "za") list.sort((a, b) => b.name.localeCompare(a.name));
+        else list.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+        return list;
+      }
+
+      const quickViewOverlay = document.querySelector("#quickViewOverlay");
+      quickViewOverlay.addEventListener("click", () => quickViewOverlay.classList.remove("show"));
+
+      function renderCatalog(withFade = false) {
+        if (withFade) catalogList.classList.add("fading");
+        const draw = () => {
+          const items = getVisibleItems();
+          catalogList.innerHTML = "";
+          resultLine.textContent = items.length ? `${items.length} ${t("treats")}` : "";
+
+          if (items.length === 0) {
+            catalogList.innerHTML = `
+              <div class="catalog-empty">
+                <svg class="sad-choco-svg" viewBox="0 0 120 120" fill="none">
+                  <path d="M26 22 H74 C76 34 86 42 96 42 V98 C96 104 91 108 85 108 H35 C29 108 26 104 26 98 Z" fill="#5C2E14" stroke="#D4AF37" stroke-width="3"/>
+                  <line x1="26" y1="54" x2="96" y2="54" stroke="#D4AF37" stroke-opacity="0.4" stroke-width="2"/>
+                  <line x1="60" y1="22" x2="60" y2="108" stroke="#D4AF37" stroke-opacity="0.4" stroke-width="2"/>
+                  <circle cx="46" cy="70" r="4" fill="#F5EFE6"/><circle cx="74" cy="70" r="4" fill="#F5EFE6"/>
+                  <path d="M48 88 Q60 78 72 88" stroke="#F0D687" stroke-width="3" stroke-linecap="round" fill="none"/>
+                </svg>
+                <div>${activeCat === "fav" ? t("emptyFav") : t("emptySearch")}</div>
+              </div>`;
+            catalogList.classList.remove("fading");
+            return;
+          }
+
+          const isDesktop = window.matchMedia("(pointer: fine)").matches;
+
+          items.forEach((item, i) => {
+            const card = document.createElement("div");
+            card.className = "catalog-card reveal";
+            card.style.transitionDelay = Math.min((i % 8) * 60, 420) + "ms";
+            card.innerHTML = `
+              <div class="thumb-wrap">
+                <span class="badge">${escapeHTML(item.categoryLabel)}</span>
+                ${item.isNew ? '<span class="badge new">New</span>' : ""}
+                <button class="heart ${FAVS.has(item.id) ? "on" : ""}" data-id="${item.id}" aria-label="Save to favourites">${FAVS.has(item.id) ? "♥" : "♡"}</button>
+                <img src="${item.img}" alt="${escapeHTML(item.name)}" loading="lazy" referrerpolicy="no-referrer" />
+              </div>
+              <div class="card-body">
+                <div class="name">${highlightMatch(item.name, searchTerm)}</div>
+                <div class="view">${t("viewDetails")}</div>
+              </div>`;
+
+            // Blur-up image sharp reveal
+            const imgEl = card.querySelector("img");
+            if (imgEl.complete) imgEl.classList.add("loaded");
+            else imgEl.addEventListener("load", () => imgEl.classList.add("loaded"));
+
+            // Desktop 3D tilt effect
+            if (isDesktop && !REDUCED) {
+              card.addEventListener("mousemove", (e) => {
+                const r = card.getBoundingClientRect();
+                const rx = ((e.clientY - r.top) / r.height - 0.5) * -9;
+                const ry = ((e.clientX - r.left) / r.width - 0.5) * 9;
+                card.style.transform = `perspective(700px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+              });
+              card.addEventListener("mouseleave", () => { card.style.transform = ""; });
+            }
+
+            // Long-press quick view
+            let lpTimer = null, didLongPress = false;
+            card.addEventListener("touchstart", () => {
+              didLongPress = false;
+              lpTimer = setTimeout(() => {
+                didLongPress = true;
+                buzz(20);
+                document.querySelector("#qvImg").src = item.imgLarge;
+                document.querySelector("#qvTitle").textContent = item.name;
+                quickViewOverlay.classList.add("show");
+              }, 480);
+            }, { passive: true });
+            card.addEventListener("touchend", () => clearTimeout(lpTimer), { passive: true });
+            card.addEventListener("touchmove", () => clearTimeout(lpTimer), { passive: true });
+
+            card.addEventListener("click", () => { if (!didLongPress) openProduct(item); });
+            card.querySelector(".heart").addEventListener("click", (e) => {
+              e.stopPropagation();
+              toggleFav(item.id, e.currentTarget, e.clientX, e.clientY);
+            });
+            catalogList.appendChild(card);
+            io.observe(card);
+          });
+          catalogList.classList.remove("fading");
+        };
+        if (withFade) setTimeout(draw, 140); else draw();
+      }
+
+      /* ---------- Favourites + Gold Confetti ---------- */
+      function burstHeart(btn) {
+        for (let i = 0; i < 8; i++) {
+          const p = document.createElement("span");
+          p.className = "burst-p";
+          const ang = (Math.PI * 2 * i) / 8, dist = 26 + Math.random() * 10;
+          p.style.setProperty("--dx", Math.cos(ang) * dist + "px");
+          p.style.setProperty("--dy", Math.sin(ang) * dist + "px");
+          btn.appendChild(p);
+          setTimeout(() => p.remove(), 650);
+        }
+      }
+
+      function syncHearts() {
+        document.querySelectorAll(".heart[data-id]").forEach(h => {
+          const on = FAVS.has(h.dataset.id);
+          h.classList.toggle("on", on);
+          h.textContent = on ? "♥" : "♡";
+        });
+        if (currentProduct) {
+          const on = FAVS.has(currentProduct.id);
+          modalFav.classList.toggle("on", on);
+          modalFav.textContent = on ? "♥ Saved" : "♡ Save";
+        }
+      }
+
+      function toggleFav(id, heartBtn, cx, cy) {
+        const adding = !FAVS.has(id);
+        if (adding) FAVS.add(id); else FAVS.delete(id);
+        saveFavs();
+        updateFavCount();
+        buzz(adding ? [15, 30, 15] : 10);
+        showToast(adding ? "Saved to favourites" : "Removed from favourites", adding ? "♥" : "♡");
+        if (adding) spawnConfetti(cx, cy);
+        if (activeCat === "fav" && !adding) { renderCatalog(true); syncHearts(); return; }
+        syncHearts();
+        if (adding && heartBtn) {
+          heartBtn.classList.remove("pop"); void heartBtn.offsetWidth; heartBtn.classList.add("pop");
+          burstHeart(heartBtn);
+        }
+      }
+
+      function setCategory(cat, scrollToGrid) {
+        activeCat = cat;
+        categoryTabs.forEach(c => c.classList.toggle("active", c.dataset.cat === cat));
+        positionChipSlider();
+        renderCatalog(true);
+        if (scrollToGrid) scrollToSection("catCollection");
+      }
+
+      function scrollToSection(id) {
+        const el = document.getElementById(id);
+        if (el) catalogSheet.scrollTo({ top: el.offsetTop - 64, behavior: "smooth" });
+      }
+
+      /* ---------- Product Modal: Gallery, Pinch-Zoom, Share, Related ---------- */
+      let imgScale = 1, pinchStartDist = 0, lastTap = 0;
+      function resetZoom() { imgScale = 1; modalImg.style.transform = ""; }
+
+      function setGalleryIndex(idx) {
+        if (!currentProduct) return;
+        const g = currentProduct.gallery;
+        galleryIdx = (idx + g.length) % g.length;
+        modalImg.src = g[galleryIdx];
+        resetZoom();
+        galleryDots.querySelectorAll(".gallery-dot").forEach((d, i) => d.classList.toggle("active", i === galleryIdx));
+      }
+
+      function openProduct(item) {
+        currentProduct = item;
+        galleryIdx = 0;
+        addRecent(item.id);
+        renderRecent();
+
+        modalCard.style.transform = "";
+        resetZoom();
+        modalImg.src = item.gallery[0];
+        modalImg.alt = item.name;
+        modalName.textContent = item.name;
+        modalCat.textContent = item.categoryLabel + (item.isNew ? " · New" : "");
+
+        // Gallery dots
+        if (item.gallery.length > 1) {
+          galleryDots.style.display = "flex";
+          galleryDots.innerHTML = item.gallery.map((_, i) => `<span class="gallery-dot ${i === 0 ? "active" : ""}" data-gi="${i}"></span>`).join("");
+          galleryDots.querySelectorAll(".gallery-dot").forEach(d => d.addEventListener("click", () => setGalleryIndex(Number(d.dataset.gi))));
+        } else {
+          galleryDots.style.display = "none";
+        }
+
+        // Related treats
+        const related = CATALOG_ITEMS.filter(x => x.category === item.category && x.id !== item.id).slice(0, 6);
+        const relWrap = document.querySelector("#modalRelatedWrap");
+        const relStrip = document.querySelector("#modalRelated");
+        if (related.length) {
+          relWrap.style.display = "block";
+          relStrip.innerHTML = related.map(r => `
+            <div class="rel-card" data-rel="${r.id}">
+              <img src="${r.img}" alt="${escapeHTML(r.name)}" referrerpolicy="no-referrer" />
+              <span>${escapeHTML(r.name)}</span>
+            </div>`).join("");
+          relStrip.querySelectorAll(".rel-card").forEach(rc => {
+            rc.addEventListener("click", () => {
+              const targetItem = CATALOG_ITEMS.find(x => x.id === rc.dataset.rel);
+              if (targetItem) openProduct(targetItem);
+            });
+          });
+        } else {
+          relWrap.style.display = "none";
+        }
+
+        productModal.classList.add("show");
+        productModal.setAttribute("aria-hidden", "false");
+        modalCard.scrollTop = 0;
+        syncHearts();
+      }
+
+      function closeProduct() {
+        productModal.classList.remove("show");
+        productModal.setAttribute("aria-hidden", "true");
+        resetZoom();
+        setTimeout(() => { modalCard.style.transform = ""; productModal.style.background = ""; }, 400);
+      }
+
+      // Pinch-to-zoom, Double-tap zoom & Horizontal Gallery Swipe
+      let galSwipeX = 0;
+      modalImgWrap.addEventListener("touchstart", (e) => {
+        if (e.touches.length === 2) {
+          pinchStartDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+        } else if (e.touches.length === 1) {
+          galSwipeX = e.touches[0].clientX;
+          const now = Date.now();
+          if (now - lastTap < 280) {
+            imgScale = imgScale > 1 ? 1 : 2.1;
+            modalImg.style.transform = `scale(${imgScale})`;
+          }
+          lastTap = now;
+        }
+      }, { passive: true });
+
+      modalImgWrap.addEventListener("touchmove", (e) => {
+        if (e.touches.length === 2 && pinchStartDist > 0) {
+          const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          imgScale = Math.max(1, Math.min(3, (dist / pinchStartDist) * imgScale));
+          pinchStartDist = dist;
+          modalImg.style.transform = `scale(${imgScale.toFixed(2)})`;
+        }
+      }, { passive: true });
+
+      modalImgWrap.addEventListener("touchend", (e) => {
+        if (e.touches.length < 2) pinchStartDist = 0;
+        if (imgScale <= 1.05 && currentProduct && currentProduct.gallery.length > 1 && e.changedTouches.length === 1) {
+          const dx = e.changedTouches[0].clientX - galSwipeX;
+          if (Math.abs(dx) > 45) setGalleryIndex(galleryIdx + (dx < 0 ? 1 : -1));
+        }
+      }, { passive: true });
+
+      document.querySelector("#modalClose").addEventListener("click", closeProduct);
+      productModal.addEventListener("click", (e) => { if (e.target === productModal) closeProduct(); });
+      modalFav.addEventListener("click", (e) => {
+        if (!currentProduct) return;
+        const gridHeart = catalogList.querySelector(`.heart[data-id="${currentProduct.id}"]`);
+        toggleFav(currentProduct.id, gridHeart, e.clientX, e.clientY);
+        if (FAVS.has(currentProduct.id)) burstHeart(modalFav);
+      });
+
+      // Web Share API
+      document.querySelector("#modalShare").addEventListener("click", async () => {
+        if (!currentProduct) return;
+        const shareData = {
+          title: `CHOCO·AI — ${currentProduct.name}`,
+          text: `Check out "${currentProduct.name}" (${currentProduct.categoryLabel}) on CHOCO·AI!`,
+          url: location.href
+        };
+        try {
+          if (navigator.share) {
+            await navigator.share(shareData);
+          } else if (navigator.clipboard) {
+            await navigator.clipboard.writeText(`${shareData.text} ${shareData.url}`);
+            showToast("Link copied to clipboard", "📋");
+          }
+        } catch (e) {}
+      });
+
+      // Enquire + Confetti + WhatsApp
+      document.querySelector("#modalEnquire").addEventListener("click", (e) => {
+        if (WHATSAPP_NUMBER && currentProduct) {
+          buzz([20, 40, 20]);
+          spawnConfetti(e.clientX, e.clientY);
+          showToast("Opening WhatsApp…", "💬");
+          const msg = encodeURIComponent(`Hi, I'm interested in "${currentProduct.name}" (${currentProduct.categoryLabel}).`);
+          setTimeout(() => window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank", "noopener"), 280);
+        } else {
+          closeProduct();
+        }
+      });
+
+      // Swipe-down to close modal (disabled while zoomed)
+      let swipeStartY = 0, swipeDY = 0, swiping = false;
+      modalCard.addEventListener("touchstart", (e) => {
+        if (modalCard.scrollTop > 0 || imgScale > 1.05 || e.touches.length > 1) { swiping = false; return; }
+        swipeStartY = e.touches[0].clientY; swipeDY = 0; swiping = true;
+      }, { passive: true });
+      modalCard.addEventListener("touchmove", (e) => {
+        if (!swiping) return;
+        swipeDY = e.touches[0].clientY - swipeStartY;
+        if (swipeDY <= 0) { swipeDY = 0; return; }
+        modalCard.style.transition = "none";
+        modalCard.style.transform = `translateY(${swipeDY}px) scale(${1 - Math.min(swipeDY / 1800, 0.05)})`;
+      }, { passive: true });
+      modalCard.addEventListener("touchend", () => {
+        if (!swiping) return;
+        swiping = false;
+        modalCard.style.transition = "";
+        if (swipeDY > 110) { buzz(15); closeProduct(); }
+        else { modalCard.style.transform = ""; }
+        swipeDY = 0;
+      });
+
+      /* ---------- Search Suggestions & Controls ---------- */
+      function renderSuggestions(val) {
+        const q = val.trim().toLowerCase();
+        const boxes = [suggDesktop, suggMobile];
+        if (!q || !CATALOG_ITEMS.length) { boxes.forEach(b => b.classList.remove("show")); return; }
+        const matches = CATALOG_ITEMS.filter(i => i.name.toLowerCase().includes(q)).slice(0, 5);
+        if (!matches.length) { boxes.forEach(b => b.classList.remove("show")); return; }
+        const html = matches.map(m => `<div class="sugg-item" data-sid="${m.id}"><span>${highlightMatch(m.name, q)}</span><small>${escapeHTML(m.categoryLabel)}</small></div>`).join("");
+        boxes.forEach(b => {
+          b.innerHTML = html;
+          b.classList.add("show");
+          b.querySelectorAll(".sugg-item").forEach(si => {
+            si.addEventListener("click", () => {
+              const item = CATALOG_ITEMS.find(x => x.id === si.dataset.sid);
+              boxes.forEach(bx => bx.classList.remove("show"));
+              if (item) openProduct(item);
+            });
+          });
+        });
+      }
+
+      function onSearch(value) {
+        searchTerm = value.trim();
+        searchInput.value = value;
+        searchInputMobile.value = value;
+        renderSuggestions(value);
+        renderCatalog();
+      }
+      searchInput.addEventListener("input", e => onSearch(e.target.value));
+      searchInputMobile.addEventListener("input", e => onSearch(e.target.value));
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".nav-search, .mobile-search")) {
+          suggDesktop.classList.remove("show"); suggMobile.classList.remove("show");
+        }
+      });
+
+      document.querySelectorAll("[data-scroll]").forEach(a => {
+        a.addEventListener("click", () => {
+          const map = { top: "catTop", collection: "catCollection", promise: "catPromise", contact: "catContact" };
+          if (a.dataset.scroll === "top") catalogSheet.scrollTo({ top: 0, behavior: "smooth" });
+          else scrollToSection(map[a.dataset.scroll]);
+        });
+      });
+      document.querySelectorAll("[data-cat-link]").forEach(a => a.addEventListener("click", () => setCategory(a.dataset.catLink, true)));
+      document.querySelector("#heroBrowse").addEventListener("click", () => scrollToSection("catCollection"));
+      document.querySelector("#heroPremium").addEventListener("click", () => setCategory("premium", true));
+      categoryTabs.forEach(chip => chip.addEventListener("click", () => setCategory(chip.dataset.cat, false)));
+      sortSelect.addEventListener("change", e => { sortMode = e.target.value; renderCatalog(true); });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if (productModal.classList.contains("show")) closeProduct();
+          else if (catalogSheet.classList.contains("open")) closeCatalog();
+        }
+      });
+
+      /* ---------- AR Camera Pause/Resume & Melt Drip Transition ---------- */
+      let arRunning = true, arBusy = false;
+      function getArSystem() { return sceneEl.systems && sceneEl.systems["mindar-image-system"]; }
+
+      async function pauseCamera() {
+        stopRawCameraFeed();
+        if (arBusy || !arRunning) return;
+        const arSystem = getArSystem();
+        if (!arSystem || !arSystem.video) return;
+        arBusy = true;
+        try {
+          arSystem.stop();
+          document.querySelectorAll("video").forEach(v => {
+            const s = v.srcObject;
+            if (s && s.getTracks) s.getTracks().forEach(tr => tr.stop());
+          });
+          arRunning = false;
+        } catch (err) {}
+        arBusy = false;
+      }
+
+      async function resumeCamera() {
+        if (arBusy || arRunning) return;
+        const arSystem = getArSystem();
+        if (!arSystem) return;
+        arBusy = true;
+        try { await arSystem.start(); arRunning = true; } catch (err) {}
+        arBusy = false;
+        startRawCameraFeed();
+      }
+
+      function openCatalog() {
+        if (catalogTransitioning) return;
+        catalogTransitioning = true;
+        arInfoBubble.classList.remove("show");
+        if (videoEl && !videoEl.paused) videoEl.pause();
+        isPlaying = false;
+        toggleButton.textContent = "▶";
+
+        // Trigger chocolate melt drip transition
+        if (!REDUCED) {
+          meltEl.classList.remove("clearing");
+          meltEl.classList.add("dripping");
+        }
+        setTimeout(() => {
+          document.body.classList.add("catalog-open");
+          catalogSheet.classList.add("open");
+          catalogSheet.scrollTop = 0;
+          runStats();
+          renderRecent();
+          setTimeout(positionChipSlider, 80);
+          pauseCamera();
+          if (!REDUCED) {
+            meltEl.classList.remove("dripping");
+            meltEl.classList.add("clearing");
+            setTimeout(() => meltEl.classList.remove("clearing"), 720);
+          }
+          setTimeout(() => { catalogTransitioning = false; }, 250);
+        }, REDUCED ? 0 : 280);
+      }
+
+      function closeCatalog() {
+        if (catalogTransitioning || !catalogSheet.classList.contains("open")) return;
+        catalogTransitioning = true;
+        closeProduct();
+        catalogSheet.classList.remove("open");
+        document.body.classList.remove("catalog-open");
+        resumeCamera();
+        setTimeout(() => { catalogTransitioning = false; }, 300);
+      }
+
+      openCatalogBtn.addEventListener("click", openCatalog);
+      closeCatalogBtn.addEventListener("click", closeCatalog);
+
+      /* ---------- Curtain Dismissal & First-Time Onboarding Trigger ---------- */
+      let curtainDismissed = false;
+      function dismissCurtainOnce() {
+        if (curtainDismissed) return;
+        curtainDismissed = true;
+        setStage(100, "Ready!");
+        setTimeout(() => {
+          curtain.style.opacity = "0";
+          setTimeout(() => {
+            curtain.style.display = "none";
+            clearInterval(uiKiller);
+            if (!localStorage.getItem("chocoai_onboarded")) {
+              setObStep(0);
+              obModal.classList.add("show");
+            }
+          }, 600);
+        }, 550);
+      }
+
+      sceneEl.addEventListener("arReady", dismissCurtainOnce);
+      sceneEl.addEventListener("arError", (err) => {
+        console.error("MindAR failed:", err);
+        dismissCurtainOnce();
+      });
+
+      const curtainWatcher = setInterval(() => {
+        const camFeed = document.querySelector("video.mindar-camera, video[autoplay]");
+        if (camFeed && camFeed.readyState >= 2 && !camFeed.paused) {
+          setStage(70, "Almost there…");
+          dismissCurtainOnce();
+          clearInterval(curtainWatcher);
+        }
+      }, 300);
+      setTimeout(() => { clearInterval(curtainWatcher); dismissCurtainOnce(); }, 6000);
+
+      /* ---------- TARGET FOUND (POP-IN + FOIL UNWRAP + SNAP SOUND) ---------- */
+      function showVideoGroup(withPop) {
+        videoGroup.object3D.visible = true;
+        videoGroup.setAttribute("visible", "true");
+        if (withPop) {
+          // Reset golden wrapper halves before peeling
+          wrapperLeft.setAttribute("position", "-0.25 0 0.012");
+          wrapperLeft.setAttribute("rotation", "0 0 0");
+          wrapperLeft.setAttribute("material", "opacity: 1");
+          wrapperRight.setAttribute("position", "0.25 0 0.012");
+          wrapperRight.setAttribute("rotation", "0 0 0");
+          wrapperRight.setAttribute("material", "opacity: 1");
+
+          videoGroup.emit("popin");
+          wrapperLeft.emit("unwrap");
+          wrapperRight.emit("unwrap");
+        }
+      }
+
+      target.addEventListener("targetFound", async () => {
+        hasFoundOnce = true;
+        clearTimeout(lostTimer);
+        lostHint.classList.remove("show");
+        document.body.classList.add("found");
+        buzz([30, 50, 30]);
+        playChocoSnap();
+
+        target.object3D.visible = true;
+        target.setAttribute("visible", "true");
+        showVideoGroup(true);
+
+        if (!currentLoadedFileId) {
+          const fileId = await getLatestVideoId();
+          if (fileId) {
+            currentLoadedFileId = fileId;
+            videoEl.src = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}`;
+            videoEl.load();
+          }
+        }
+        isPlaying = false;
+        toggleButton.textContent = "▶";
+      });
+
+      /* ---------- TARGET LOST (2-SECOND CUSTOM HINT) ---------- */
+      target.addEventListener("targetLost", () => {
+        document.body.classList.remove("found");
+        arInfoBubble.classList.remove("show");
+        closeCatalog();
+
+        if (!videoEl.paused) videoEl.pause();
+        target.object3D.visible = false;
+        target.setAttribute("visible", "false");
+        videoGroup.object3D.visible = false;
+        videoGroup.setAttribute("visible", "false");
+        videoGroup.object3D.scale.set(0.001, 0.001, 0.001);
+
+        isPlaying = false;
+        toggleButton.textContent = "▶";
+
+        if (hasFoundOnce) {
+          clearTimeout(lostTimer);
+          lostTimer = setTimeout(() => {
+            if (!document.body.classList.contains("found") && !document.body.classList.contains("catalog-open")) {
+              lostHint.classList.add("show");
+            }
+          }, 2000);
+        }
+      });
+
+      /* ---------- PLAY / PAUSE ---------- */
+      toggleButton.addEventListener("click", async () => {
+        try {
+          if (!isPlaying) {
+            videoEl.muted = false;
+            await videoEl.play();
+            toggleButton.textContent = "⏸";
+            isPlaying = true;
+            target.object3D.visible = true;
+            target.setAttribute("visible", "true");
+            showVideoGroup(false);
+          } else {
+            videoEl.pause();
+            toggleButton.textContent = "▶";
+            isPlaying = false;
+          }
+        } catch (err) {
+          console.error("Playback error:", err);
+        }
+      });
+
+      /* ---------- Initial Catalog Load ---------- */
+      showSkeletons();
+      fetchDriveCatalog().then(() => {
+        setStage(60, "Melting chocolate…");
+        updateCounts();
+        renderCatalog(true);
+        renderRecent();
+        if (catalogSheet.classList.contains("open")) {
+          runStats();
+          setTimeout(positionChipSlider, 80);
+        }
+      });
+    });
+
+    /* ======================================================
+       UPGRADED TOAST & ANTI-TAMPER DETERRENTS
+    ====================================================== */
+    let toastTimer = null;
+    function showToast(message, icon = "✨") {
+      const toast = document.querySelector("#toast");
+      if (!toast) return;
+      document.querySelector("#toastIcon").textContent = icon;
+      document.querySelector("#toastMsg").textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2000);
+    }
+
+    document.addEventListener("keydown", (e) => {
+      const isCmdOrCtrl = e.ctrlKey || e.metaKey;
+      const key = e.key ? e.key.toUpperCase() : "";
+      if (
+        e.key === "F12" ||
+        (isCmdOrCtrl && e.shiftKey && (key === "I" || key === "J" || key === "C")) ||
+        (isCmdOrCtrl && key === "U")
+      ) {
+        e.preventDefault();
+        showToast("Action Disabled", "🔒");
+      }
+    });
+
+    document.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      showToast("Action Disabled", "🔒");
+    });
+  </script>
+</body>
+</html>

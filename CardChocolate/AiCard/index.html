@@ -52,7 +52,7 @@
       --modal-backdrop: rgba(43, 23, 11, 0.58);
     }
 
-    /* ---------- Seasonal Accent Themes ---------- */
+    /* ---------- Seasonal Accent Themes (auto-applied by date) ---------- */
     [data-season="diwali"] {
       --gold: #FFB703;
       --gold-soft: #FFD166;
@@ -368,8 +368,6 @@
       transition: border-color 0.2s, background 0.2s;
     }
     .icon-pill:hover { border-color: var(--gold); }
-    select.icon-pill { outline: none; padding-right: 6px; }
-    select.icon-pill option { background: #2a1810; color: #F5EFE6; }
 
     .nav-search { position: relative; display: none; width: 230px; }
     .nav-search input, .mobile-search input {
@@ -722,20 +720,8 @@
     }
     #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* Offline Fallback & PWA Banner */
+    /* Offline fallback */
     #offlineOverlay { z-index: 98000; }
-    #pwaBanner {
-      position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom));
-      transform: translateX(-50%) translateY(120%); z-index: 2300;
-      width: min(92vw, 420px); padding: 12px 14px; border-radius: 16px;
-      background: var(--glass-strong); border: 1px solid var(--gold);
-      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      display: flex; align-items: center; justify-content: space-between; gap: 10px;
-      box-shadow: 0 14px 36px rgba(0,0,0,0.45); transition: transform 0.4s cubic-bezier(0.22,1,0.36,1);
-    }
-    #pwaBanner.show { transform: translateX(-50%) translateY(0); }
-    #pwaBanner .pwa-txt { font-size: 12px; line-height: 1.4; color: var(--cream); }
-    #pwaBanner .pwa-txt b { color: var(--gold-soft); display: block; font-size: 13px; }
 
     @media (min-width: 768px) {
       .nav-links, .sort-wrap { display: flex; }
@@ -903,14 +889,6 @@
             <div class="search-suggestions" id="suggDesktop"></div>
           </div>
           <div class="nav-controls">
-            <select class="icon-pill" id="seasonSelect" aria-label="Seasonal Theme" title="Theme">
-              <option value="auto">✨ Auto</option>
-              <option value="default">🍫 Classic</option>
-              <option value="diwali">🪔 Diwali</option>
-              <option value="pongal">🌾 Pongal</option>
-              <option value="valentine">💝 Valentine</option>
-              <option value="christmas">🎄 Xmas</option>
-            </select>
             <button class="icon-pill" id="modeToggleBtn" title="Light/Dark Mode" aria-label="Light/Dark Mode">☀️</button>
             <button class="icon-pill" id="langToggleBtn" title="English / Tamil">தமிழ்</button>
           </div>
@@ -1016,14 +994,6 @@
 
     <button id="backToTop" aria-label="Back to top">↑</button>
 
-    <!-- PWA Install Banner -->
-    <div id="pwaBanner">
-      <div class="pwa-txt"><b data-i18n="installTitle">Install CHOCO·AI</b><span data-i18n="installDesc">Add to Home Screen for instant AR &amp; catalog access.</span></div>
-      <div style="display:flex;gap:6px;">
-        <button class="btn-gold" id="pwaInstallBtn" style="padding:8px 14px;font-size:11px;" data-i18n="installBtn">Install</button>
-        <button class="icon-pill" id="pwaDismissBtn" aria-label="Dismiss">✕</button>
-      </div>
-    </div>
   </div>
 
   <!-- Product Detail Modal -->
@@ -1306,7 +1276,7 @@
     }
 
     /* ======================================================
-       THEMES (SEASONAL AUTO/MANUAL + LIGHT/DARK + GREETING)
+       THEMES (AUTO SEASONAL BY DATE + LIGHT/DARK + GREETING)
     ====================================================== */
     function detectSeason() {
       const d = new Date(), m = d.getMonth() + 1, day = d.getDate();
@@ -1320,7 +1290,6 @@
     function applySeason(val) {
       const resolved = val === "auto" ? detectSeason() : val;
       document.documentElement.setAttribute("data-season", resolved);
-      localStorage.setItem("chocoai_season", val);
     }
 
     function applyMode(mode) {
@@ -1540,10 +1509,8 @@
 
       document.querySelector("#yr").textContent = new Date().getFullYear();
 
-      // Init saved preferences
-      const savedSeason = localStorage.getItem("chocoai_season") || "auto";
-      document.querySelector("#seasonSelect").value = savedSeason;
-      applySeason(savedSeason);
+      // Init saved preferences (season theme is applied automatically by date)
+      applySeason("auto");
       applyMode(localStorage.getItem("chocoai_mode") || "dark");
       applyLanguage(currentLang);
       updateSoundIcon();
@@ -1603,10 +1570,6 @@
       });
 
       /* ---------- Theme & Language Controls ---------- */
-      document.querySelector("#seasonSelect").addEventListener("change", (e) => {
-        applySeason(e.target.value);
-        showToast("Theme updated", "🎨");
-      });
       document.querySelector("#modeToggleBtn").addEventListener("click", () => {
         const next = document.documentElement.getAttribute("data-mode") === "dark" ? "light" : "dark";
         applyMode(next);
@@ -1674,28 +1637,6 @@
         else showToast("Still offline", "📡");
       });
       syncOnline();
-
-      /* ---------- PWA Install Prompt ---------- */
-      let deferredPrompt = null;
-      const pwaBanner = document.querySelector("#pwaBanner");
-      window.addEventListener("beforeinstallprompt", (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        if (!localStorage.getItem("chocoai_pwa_dismissed")) {
-          setTimeout(() => pwaBanner.classList.add("show"), 2500);
-        }
-      });
-      document.querySelector("#pwaInstallBtn").addEventListener("click", async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        pwaBanner.classList.remove("show");
-      });
-      document.querySelector("#pwaDismissBtn").addEventListener("click", () => {
-        pwaBanner.classList.remove("show");
-        localStorage.setItem("chocoai_pwa_dismissed", "1");
-      });
 
       /* ---------- Staged Loading Bar ---------- */
       const fillEl = document.querySelector("#chocoFill");
