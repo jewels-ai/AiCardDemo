@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-mode="dark">
+<html lang="en" data-mode="dark" data-season="default">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -52,7 +52,54 @@
       --modal-backdrop: rgba(43, 23, 11, 0.58);
     }
 
-    
+    /* ---------- Seasonal Accent Themes (auto-applied by date) ---------- */
+    [data-season="diwali"] {
+      --gold: #FFB703;
+      --gold-soft: #FFD166;
+      --brand-accent: #9E2A2B;
+      --brand-accent-dark: #540B0E;
+    }
+    [data-season="christmas"] {
+      --gold: #E0B84C;
+      --gold-soft: #F7DC88;
+      --brand-accent: #1B5E3A;
+      --brand-accent-dark: #0E3822;
+      --heart: #D62828;
+    }
+    [data-season="valentine"] {
+      --gold: #F4A6B8;
+      --gold-soft: #FFD1DC;
+      --brand-accent: #8E1B3A;
+      --brand-accent-dark: #4A0D1E;
+      --heart: #FF3366;
+    }
+    [data-season="pongal"] {
+      --gold: #E9A825;
+      --gold-soft: #F9D469;
+      --brand-accent: #B85D19;
+      --brand-accent-dark: #6E330B;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; background: #1a0f0a; overflow: hidden;
+      font-family: 'Manrope', 'Noto Sans Tamil', sans-serif; color: var(--cream);
+      -webkit-tap-highlight-color: transparent; height: 100%;
+    }
+
+    body.catalog-open a-scene,
+    body.catalog-open #rawCameraFeed {
+      filter: brightness(0.25) saturate(0.7) blur(10px);
+      transition: filter 0.6s ease; pointer-events: none;
+    }
+    a-scene { transition: filter 0.4s ease; }
+
+    #rawCameraFeed {
+      position: fixed; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; z-index: 0; background: #000; transition: filter 0.4s ease;
+    }
+
     /* ---------- Loading Curtain ---------- */
     #blackCurtain {
       position: fixed; inset: 0;
@@ -321,7 +368,7 @@
       transition: border-color 0.2s, background 0.2s;
     }
     .icon-pill:hover { border-color: var(--gold); }
-   
+
     .nav-search { position: relative; display: none; width: 230px; }
     .nav-search input, .mobile-search input {
       width: 100%; padding: 9px 14px 9px 36px; border-radius: 999px;
@@ -854,7 +901,6 @@
             <div class="search-suggestions" id="suggDesktop"></div>
           </div>
           <div class="nav-controls">
-           
             <button class="icon-pill" id="modeToggleBtn" title="Light/Dark Mode" aria-label="Light/Dark Mode">☀️</button>
             <button class="icon-pill" id="langToggleBtn" title="English / Tamil">தமிழ்</button>
           </div>
@@ -1250,9 +1296,22 @@
     }
 
     /* ======================================================
-       THEMES (SEASONAL AUTO/MANUAL + LIGHT/DARK + GREETING)
+       THEMES (AUTO SEASONAL BY DATE + LIGHT/DARK + GREETING)
     ====================================================== */
-    
+    function detectSeason() {
+      const d = new Date(), m = d.getMonth() + 1, day = d.getDate();
+      if (m === 1 && day >= 10 && day <= 20) return "pongal";
+      if (m === 2 && day >= 7 && day <= 18) return "valentine";
+      if ((m === 10 && day >= 15) || (m === 11 && day <= 15)) return "diwali";
+      if (m === 12 && day >= 15) return "christmas";
+      return "default";
+    }
+
+    function applySeason(val) {
+      const resolved = val === "auto" ? detectSeason() : val;
+      document.documentElement.setAttribute("data-season", resolved);
+    }
+
     function applyMode(mode) {
       document.documentElement.setAttribute("data-mode", mode);
       localStorage.setItem("chocoai_mode", mode);
@@ -1470,8 +1529,8 @@
 
       document.querySelector("#yr").textContent = new Date().getFullYear();
 
-      // Init saved preferences
- 
+      // Init saved preferences (season theme is applied automatically by date)
+      applySeason("auto");
       applyMode(localStorage.getItem("chocoai_mode") || "dark");
       applyLanguage(currentLang);
       updateSoundIcon();
@@ -1531,7 +1590,6 @@
       });
 
       /* ---------- Theme & Language Controls ---------- */
-      
       document.querySelector("#modeToggleBtn").addEventListener("click", () => {
         const next = document.documentElement.getAttribute("data-mode") === "dark" ? "light" : "dark";
         applyMode(next);
@@ -2409,7 +2467,7 @@
       toastTimer = setTimeout(() => toast.classList.remove("show"), 2000);
     }
 
-    document.addEventListener("keydown", (e) => {<html lang="en" data-mode="dark" data-season="default">
+    document.addEventListener("keydown", (e) => {
       const isCmdOrCtrl = e.ctrlKey || e.metaKey;
       const key = e.key ? e.key.toUpperCase() : "";
       if (
