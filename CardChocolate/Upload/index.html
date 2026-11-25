@@ -114,133 +114,133 @@ input:focus,select:focus{border-color:var(--gold)}
 
 <div class="wrap">
 
-  <h1>Vault Media Stream</h1>
+  <h1>Vault Media Stream</h1>
 
-  <div class="sub">CHOCO-AI • Product Catalogue Manager</div>
+  <div class="sub">CHOCO-AI • Product Catalogue Manager</div>
 
 
 
-  <!-- HOME -->
+  <!-- HOME -->
 
-  <div class="view active" id="v-home">
+  <div class="view active" id="v-home">
 
-    <div class="choices">
+    <div class="choices">
 
-      <button class="choice" data-go="upload">📤 UPLOAD THE PRODUCT<small>Add images &amp; AR video to the catalogue</small></button>
+      <button class="choice" data-go="upload">📤 UPLOAD THE PRODUCT<small>Add images & AR video to the catalogue</small></button>
 
-      <button class="choice del" data-go="delcats">🗑️ DELETE THE PRODUCT<small>Remove products from the catalogue</small></button>
+      <button class="choice del" data-go="delcats">🗑️ DELETE THE PRODUCT<small>Remove products from the catalogue</small></button>
 
-    </div>
+    </div>
 
-  </div>
+  </div>
 
 
 
-  <!-- UPLOAD -->
+  <!-- UPLOAD -->
 
-  <div class="view" id="v-upload">
+  <div class="view" id="v-upload">
 
-    <button class="back" data-go="home">← Back</button>
+    <button class="back" data-go="home">← Back</button>
 
-    <div class="grid">
+    <div class="grid">
 
-      <section>
+      <section>
 
-        <label for="productName">PRODUCT NAME</label>
+        <label for="productName">PRODUCT NAME</label>
 
-        <input id="productName" placeholder="E.g., Hazelnut Praline Truffle">
+        <input id="productName" placeholder="E.g., Hazelnut Praline Truffle">
 
-        <div style="height:14px"></div>
+        <div style="height:14px"></div>
 
-        <label for="category">PRODUCT CATEGORY</label>
+        <label for="category">PRODUCT CATEGORY</label>
 
-        <select id="category"><option value="">Select category</option></select>
+        <select id="category"><option value="">Select category</option></select>
 
-        <div class="drop" id="drop"><div><strong>📷 DROP OR SELECT CATALOGUE IMAGE HERE</strong><span>JPG, PNG, WEBP • Multiple images supported</span></div></div>
+        <div class="drop" id="drop"><div><strong>📷 DROP OR SELECT CATALOGUE IMAGE HERE</strong><span>JPG, PNG, WEBP • Multiple images supported</span></div></div>
 
-        <input id="files" type="file" accept="image/*" multiple hidden>
+        <input id="files" type="file" accept="image/*" multiple hidden>
 
-        <div class="preview" id="preview"></div>
+        <div class="preview" id="preview"></div>
 
-      </section>
+      </section>
 
-      <section>
+      <section>
 
-        <div class="info"><b>Automatic Drive Routing</b><br>Select a category and every uploaded image is sent to its matching Google Drive folder.<br><br><span id="routeList"></span></div>
+        <div class="info"><b>Automatic Drive Routing</b><br>Select a category and every uploaded image is sent to its matching Google Drive folder.<br><br><span id="routeList"></span></div>
 
-        <div class="actions"><button class="btn dark" id="clear" type="button">CLEAR ALL</button><button class="btn gold" id="upload" type="button">UPLOAD THE PRODUCT</button></div>
+        <div class="actions"><button class="btn dark" id="clear" type="button">CLEAR ALL</button><button class="btn gold" id="upload" type="button">UPLOAD THE PRODUCT</button></div>
 
-        <div class="status" id="status"></div>
+        <div class="status" id="status"></div>
 
-      </section>
+      </section>
 
-    </div>
+    </div>
 
-    <section class="media-section">
+    <section class="media-section">
 
-      <div class="media-title"><h2>AR EXPERIENCE MEDIA (CARD TARGET)</h2><span>Auto-Compressed for Fast Streaming</span></div>
+      <div class="media-title"><h2>AR EXPERIENCE MEDIA (CARD TARGET)</h2><span>Auto-Compressed for Fast Streaming</span></div>
 
-      <div class="video-drop" id="videoDrop">
+      <div class="video-drop" id="videoDrop">
 
-        <div id="videoPlaceholder"><strong style="display:block;color:var(--gold2);font-size:12px">🎬 DROP AR VIDEO HERE</strong><span style="font-size:11px;color:var(--muted)">MP4 / WebM / MOV • Auto-compressed for low internet bandwidth</span></div>
+        <div id="videoPlaceholder"><strong style="display:block;color:var(--gold2);font-size:12px">🎬 DROP AR VIDEO HERE</strong><span style="font-size:11px;color:var(--muted)">MP4 / WebM / MOV • Auto-compressed for low internet bandwidth</span></div>
 
-        <video id="videoPreview" controls playsinline muted style="display:none"></video>
+        <video id="videoPreview" controls playsinline muted style="display:none"></video>
 
-      </div>
+      </div>
 
-      <input id="videoFile" type="file" accept="video/mp4,video/webm,video/quicktime" hidden>
+      <input id="videoFile" type="file" accept="video/mp4,video/webm,video/quicktime" hidden>
 
-      <div class="video-name" id="videoName">Awaiting video file...</div>
+      <div class="video-name" id="videoName">Awaiting video file...</div>
 
-      <div class="video-actions"><button class="btn dark" id="clearVideo" type="button">CLEAR VIDEO</button><button class="btn gold" id="uploadVideo" type="button">COMPRESS &amp; UPLOAD AR VIDEO</button></div>
+      <div class="video-actions"><button class="btn dark" id="clearVideo" type="button">CLEAR VIDEO</button><button class="btn gold" id="uploadVideo" type="button">COMPRESS & UPLOAD AR VIDEO</button></div>
 
-      <div class="status" id="videoStatus"></div>
+      <div class="status" id="videoStatus"></div>
 
-    </section>
+    </section>
 
-  </div>
+  </div>
 
 
 
-  <!-- DELETE: categories -->
+  <!-- DELETE: categories -->
 
-  <div class="view" id="v-delcats">
+  <div class="view" id="v-delcats">
 
-    <button class="back" data-go="home">← Back</button>
+    <button class="back" data-go="home">← Back</button>
 
-    <div class="toolbar"><h2>Select a category</h2></div>
+    <div class="toolbar"><h2>Select a category</h2></div>
 
-    <div class="cats" id="catList"></div>
+    <div class="cats" id="catList"></div>
 
-  </div>
+  </div>
 
 
 
-  <!-- DELETE: products -->
+  <!-- DELETE: products -->
 
-  <div class="view" id="v-delprods">
+  <div class="view" id="v-delprods">
 
-    <button class="back" data-go="delcats">← Categories</button>
+    <button class="back" data-go="delcats">← Categories</button>
 
-    <div class="toolbar">
+    <div class="toolbar">
 
-      <h2 id="delTitle"></h2>
+      <h2 id="delTitle"></h2>
 
-      <div style="display:flex;gap:10px">
+      <div style="display:flex;gap:10px">
 
-        <button class="btn dark" id="selAll" type="button">SELECT ALL</button>
+        <button class="btn dark" id="selAll" type="button">SELECT ALL</button>
 
-        <button class="btn red" id="delBtn" type="button" disabled>DELETE SELECTED</button>
+        <button class="btn red" id="delBtn" type="button" disabled>DELETE SELECTED</button>
 
-      </div>
+      </div>
 
-    </div>
+    </div>
 
-    <div class="thumbs" id="thumbs"></div>
+    <div class="thumbs" id="thumbs"></div>
 
-    <div class="status" id="delStatus"></div>
+    <div class="status" id="delStatus"></div>
 
-  </div>
+  </div>
 
 </div>
 
@@ -254,15 +254,15 @@ const AR_VIDEO_FOLDER_ID = "1jRyVReP4cq7yk1VqwdFCMt0w4on4S77Q";
 
 const FOLDERS = {
 
-  "Gift & Souvenir Collection": "17ySewgdqCobAmmA2GJQr26dTOZ2_i_QP",
+  "Gift & Souvenir Collection": "17ySewgdqCobAmmA2GJQr26dTOZ2_i_QP",
 
-  "Classic Homemade Chocolates": "1MNyNI74BCiWLIYlLa47_rdNOk9VyPAv6",
+  "Classic Homemade Chocolates": "1MNyNI74BCiWLIYlLa47_rdNOk9VyPAv6",
 
-  "Flavoured & Gourmet Chocolates": "1W3asJarlw4jzVYxiHH3572tR34qqZrrl",
+  "Flavoured & Gourmet Chocolates": "1W3asJarlw4jzVYxiHH3572tR34qqZrrl",
 
-  "Nuts & Dry Fruit Chocolates": "1nKxR0fYLYx7_NE068EbglJLVyOJ6Uc4L",
+  "Nuts & Dry Fruit Chocolates": "1nKxR0fYLYx7_NE068EbglJLVyOJ6Uc4L",
 
-  "Premium & Luxury Chocolates": "1Dmdcl3emFUjStD4-fQczCHly_SXxnI46"
+  "Premium & Luxury Chocolates": "1Dmdcl3emFUjStD4-fQczCHly_SXxnI46"
 
 };
 
@@ -278,43 +278,43 @@ const $ = id => document.getElementById(id);
 
 async function post(payload) {
 
-  let response;
+  let response;
 
-  try {
+  try {
 
-    response = await fetch(APPS_SCRIPT_URL, {
+    response = await fetch(APPS_SCRIPT_URL, {
 
-      method: "POST",
+      method: "POST",
 
-      redirect: "follow",
+      redirect: "follow",
 
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
 
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload)
 
-    });
+    });
 
-  } catch (e) {
+  } catch (e) {
 
-    throw new Error("Cannot reach Apps Script (network/CORS). In Apps Script: Deploy > Manage deployments > Web app, 'Execute as: Me', 'Who has access: Anyone', then deploy a NEW version.");
+    throw new Error("Cannot reach Apps Script (network/CORS). In Apps Script: Deploy > Manage deployments > Web app, 'Execute as: Me', 'Who has access: Anyone', then deploy a NEW version.");
 
-  }
+  }
 
-  const text = await response.text();
+  const text = await response.text();
 
-  let json;
+  let json;
 
-  try { json = JSON.parse(text); }
+  try { json = JSON.parse(text); }
 
-  catch (e) {
+  catch (e) {
 
-    throw new Error("Apps Script did not return JSON (usually a login/permission page or script error). Redeploy as Web app with access 'Anyone'. Response began: " + text.slice(0, 120).replace(/\s+/g, " "));
+    throw new Error("Apps Script did not return JSON (usually a login/permission page or script error). Redeploy as Web app with access 'Anyone'. Response began: " + text.slice(0, 120).replace(/\s+/g, " "));
 
-  }
+  }
 
-  if (!response.ok) throw new Error(json.error || `HTTP ${response.status}`);
+  if (!response.ok) throw new Error(json.error || `HTTP ${response.status}`);
 
-  return json;
+  return json;
 
 }
 
@@ -334,23 +334,23 @@ document.addEventListener("click", e => { const b=e.target.closest("[data-go]");
 
 Object.keys(FOLDERS).forEach(c => {
 
-  $("category").add(new Option(c, c));
+  $("category").add(new Option(c, c));
 
-  const line = document.createElement("div");
+  const line = document.createElement("div");
 
-  line.innerHTML = "<b></b> → folder";
+  line.innerHTML = "<b></b> → folder";
 
-  line.querySelector("b").textContent = c;
+  line.querySelector("b").textContent = c;
 
-  $("routeList").appendChild(line);
+  $("routeList").appendChild(line);
 
-  const b = document.createElement("button");
+  const b = document.createElement("button");
 
-  b.className = "choice"; b.textContent = c;
+  b.className = "choice"; b.textContent = c;
 
-  b.onclick = () => openCategory(c);
+  b.onclick = () => openCategory(c);
 
-  $("catList").appendChild(b);
+  $("catList").appendChild(b);
 
 });
 
@@ -360,13 +360,13 @@ Object.keys(FOLDERS).forEach(c => {
 
 const readAsDataURL = b => new Promise((res, rej) => {
 
-  const r = new FileReader();
+  const r = new FileReader();
 
-  r.onload = () => res(r.result);
+  r.onload = () => res(r.result);
 
-  r.onerror = () => rej(new Error("Could not read file."));
+  r.onerror = () => rej(new Error("Could not read file."));
 
-  r.readAsDataURL(b);
+  r.readAsDataURL(b);
 
 });
 
@@ -394,21 +394,21 @@ function addFiles(l){selected=[...selected,...l.filter(f=>f.type.startsWith("ima
 
 function renderPreview(){
 
-  preview.innerHTML="";
+  preview.innerHTML="";
 
-  selected.forEach((file,i)=>{
+  selected.forEach((file,i)=>{
 
-    const c=document.createElement("div");c.className="preview-item";
+    const c=document.createElement("div");c.className="preview-item";
 
-    const img=document.createElement("img");img.src=URL.createObjectURL(file);img.onload=()=>URL.revokeObjectURL(img.src);
+    const img=document.createElement("img");img.src=URL.createObjectURL(file);img.onload=()=>URL.revokeObjectURL(img.src);
 
-    const r=document.createElement("button");r.className="remove-btn";r.innerHTML="&times;";
+    const r=document.createElement("button");r.className="remove-btn";r.innerHTML="×";
 
-    r.onclick=e=>{e.stopPropagation();selected.splice(i,1);renderPreview()};
+    r.onclick=e=>{e.stopPropagation();selected.splice(i,1);renderPreview()};
 
-    c.append(img,r);preview.appendChild(c);
+    c.append(img,r);preview.appendChild(c);
 
-  });
+  });
 
 }
 
@@ -418,63 +418,63 @@ $("clear").onclick=()=>{selected=[];filesEl.value="";preview.innerHTML="";setSta
 
 $("upload").onclick=async()=>{
 
-  const name=$("productName").value.trim(), category=$("category").value;
+  const name=$("productName").value.trim(), category=$("category").value;
 
-  if(!name) return alert("Please enter Product Name.");
+  if(!name) return alert("Please enter Product Name.");
 
-  if(!category) return alert("Please select Product Category.");
+  if(!category) return alert("Please select Product Category.");
 
-  if(!selected.length) return alert("Please select at least one catalogue image.");
+  if(!selected.length) return alert("Please select at least one catalogue image.");
 
-  const btn=$("upload");btn.disabled=true;
+  const btn=$("upload");btn.disabled=true;
 
-  const total=selected.length;
+  const total=selected.length;
 
-  try{
+  try{
 
-    for(let i=0;i<total;i++){
+    for(let i=0;i<total;i++){
 
-      setStatus(statusEl,`Uploading ${i+1} of ${total}…`);
+      setStatus(statusEl,`Uploading ${i+1} of ${total}…`);
 
-      const file=selected[i];
+      const file=selected[i];
 
-      const data=await readAsDataURL(file);
+      const data=await readAsDataURL(file);
 
-      const r=await post({
+      const r=await post({
 
-        action:"uploadProductImage",
+        action:"uploadProductImage",
 
-        folderId:FOLDERS[category],
+        folderId:FOLDERS[category],
 
-        category,
+        category,
 
-        productName:name,
+        productName:name,
 
-        fileName:file.name,
+        fileName:file.name,
 
-        mimeType:file.type||"image/jpeg",
+        mimeType:file.type||"image/jpeg",
 
-        data,                       // full data URL
+        data,                      // full data URL
 
-        base64:splitDataURL(data)   // raw base64
+        base64:splitDataURL(data)   // raw base64
 
-      });
+      });
 
-      if(!r.success) throw new Error(r.error||`Upload failed for ${file.name}`);
+      if(!r.success) throw new Error(r.error||`Upload failed for ${file.name}`);
 
-    }
+    }
 
-    setStatus(statusEl,`✓ ${total} image(s) uploaded to ${category}.`);
+    setStatus(statusEl,`✓ ${total} image(s) uploaded to ${category}.`);
 
-    selected=[];filesEl.value="";preview.innerHTML="";
+    selected=[];filesEl.value="";preview.innerHTML="";
 
-  }catch(err){
+  }catch(err){
 
-    console.error(err);
+    console.error(err);
 
-    setStatus(statusEl,"Upload failed: "+err.message,true);
+    setStatus(statusEl,"Upload failed: "+err.message,true);
 
-  }finally{btn.disabled=false}
+  }finally{btn.disabled=false}
 
 };
 
@@ -498,17 +498,17 @@ videoFileEl.onchange=()=>{if(videoFileEl.files[0])setVideo(videoFileEl.files[0])
 
 function setVideo(f){
 
-  selectedVideo=f;videoPreview.src=URL.createObjectURL(f);videoPreview.style.display="block";videoPlaceholder.style.display="none";
+  selectedVideo=f;videoPreview.src=URL.createObjectURL(f);videoPreview.style.display="block";videoPlaceholder.style.display="none";
 
-  videoName.textContent=`${f.name} (${(f.size/1048576).toFixed(1)} MB)`;setStatus(videoStatus,"");
+  videoName.textContent=`${f.name} (${(f.size/1048576).toFixed(1)} MB)`;setStatus(videoStatus,"");
 
 }
 
 function clearVideo(){
 
-  selectedVideo=null;videoFileEl.value="";videoPreview.pause();videoPreview.removeAttribute("src");videoPreview.load();
+  selectedVideo=null;videoFileEl.value="";videoPreview.pause();videoPreview.removeAttribute("src");videoPreview.load();
 
-  videoPreview.style.display="none";videoPlaceholder.style.display="block";videoName.textContent="Awaiting video file...";setStatus(videoStatus,"");
+  videoPreview.style.display="none";videoPlaceholder.style.display="block";videoName.textContent="Awaiting video file...";setStatus(videoStatus,"");
 
 }
 
@@ -518,73 +518,73 @@ $("clearVideo").onclick=clearVideo;
 
 function compressVideoFile(file,onProgress){
 
-  return new Promise((resolve,reject)=>{
+  return new Promise((resolve,reject)=>{
 
-    if(typeof MediaRecorder==="undefined"||!HTMLCanvasElement.prototype.captureStream) return reject(new Error("Compression not supported in this browser."));
+    if(typeof MediaRecorder==="undefined"||!HTMLCanvasElement.prototype.captureStream) return reject(new Error("Compression not supported in this browser."));
 
-    const video=document.createElement("video");
+    const video=document.createElement("video");
 
-    const url=URL.createObjectURL(file);
+    const url=URL.createObjectURL(file);
 
-    video.src=url;video.muted=true;video.playsInline=true;
+    video.src=url;video.muted=true;video.playsInline=true;
 
-    let finished=false, anim=null, rec=null;
+    let finished=false, anim=null, rec=null;
 
-    const cleanup=()=>{cancelAnimationFrame(anim);URL.revokeObjectURL(url)};
+    const cleanup=()=>{cancelAnimationFrame(anim);URL.revokeObjectURL(url)};
 
-    const fail=err=>{ if(finished)return; finished=true; cleanup(); reject(err instanceof Error?err:new Error("Video compression failed.")); };
+    const fail=err=>{ if(finished)return; finished=true; cleanup(); reject(err instanceof Error?err:new Error("Video compression failed.")); };
 
-    video.onerror=()=>fail(new Error("Browser cannot decode this video."));
+    video.onerror=()=>fail(new Error("Browser cannot decode this video."));
 
-    video.onloadedmetadata=()=>{
+    video.onloadedmetadata=()=>{
 
-      let w=video.videoWidth||640,h=video.videoHeight||480;
+      let w=video.videoWidth||640,h=video.videoHeight||480;
 
-      if(w>720){h=Math.round(h*720/w);w=720}
+      if(w>720){h=Math.round(h*720/w);w=720}
 
-      if(w%2)w--;if(h%2)h--;
+      if(w%2)w--;if(h%2)h--;
 
-      const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;
+      const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;
 
-      const ctx=canvas.getContext("2d"),stream=canvas.captureStream(25);
+      const ctx=canvas.getContext("2d"),stream=canvas.captureStream(25);
 
-      let mime="video/webm;codecs=vp8";
+      let mime="video/webm;codecs=vp8";
 
-      if(!MediaRecorder.isTypeSupported(mime))mime=MediaRecorder.isTypeSupported("video/mp4")?"video/mp4":"video/webm";
+      if(!MediaRecorder.isTypeSupported(mime))mime=MediaRecorder.isTypeSupported("video/mp4")?"video/mp4":"video/webm";
 
-      const chunks=[];
+      const chunks=[];
 
-      try{ rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:800000}); }catch(e){ return fail(e); }
+      try{ rec=new MediaRecorder(stream,{mimeType:mime,videoBitsPerSecond:800000}); }catch(e){ return fail(e); }
 
-      rec.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data)};
+      rec.ondataavailable=e=>{if(e.data&&e.data.size>0)chunks.push(e.data)};
 
-      rec.onstop=()=>{ if(finished)return; finished=true; cleanup(); resolve(new Blob(chunks,{type:mime.split(";")[0]})); };
+      rec.onstop=()=>{ if(finished)return; finished=true; cleanup(); resolve(new Blob(chunks,{type:mime.split(";")[0]})); };
 
-      rec.onerror=()=>fail(new Error("Recorder error."));
+      rec.onerror=()=>fail(new Error("Recorder error."));
 
-      const draw=()=>{
+      const draw=()=>{
 
-        if(finished)return;
+        if(finished)return;
 
-        if(video.ended){ if(rec.state!=="inactive")rec.stop(); return; }
+        if(video.ended){ if(rec.state!=="inactive")rec.stop(); return; }
 
-        ctx.drawImage(video,0,0,w,h);
+        ctx.drawImage(video,0,0,w,h);
 
-        if(onProgress&&video.duration)onProgress(Math.min(100,Math.round(video.currentTime/video.duration*100)));
+        if(onProgress&&video.duration)onProgress(Math.min(100,Math.round(video.currentTime/video.duration*100)));
 
-        anim=requestAnimationFrame(draw);
+        anim=requestAnimationFrame(draw);
 
-      };
+      };
 
-      video.onended=()=>{ if(rec.state!=="inactive")rec.stop(); };
+      video.onended=()=>{ if(rec.state!=="inactive")rec.stop(); };
 
-      rec.start(200);
+      rec.start(200);
 
-      video.play().then(draw).catch(fail);
+      video.play().then(draw).catch(fail);
 
-    };
+    };
 
-  });
+  });
 
 }
 
@@ -592,75 +592,75 @@ function compressVideoFile(file,onProgress){
 
 $("uploadVideo").onclick=async()=>{
 
-  if(!selectedVideo)return alert("Please select an AR video first.");
+  if(!selectedVideo)return alert("Please select an AR video first.");
 
-  const btn=$("uploadVideo");btn.disabled=true;
+  const btn=$("uploadVideo");btn.disabled=true;
 
-  try{
+  try{
 
-    const orig=(selectedVideo.size/1048576).toFixed(2);
+    const orig=(selectedVideo.size/1048576).toFixed(2);
 
-    let blob, fileBase=selectedVideo.name.replace(/\.[^.]+$/, ""), ext, compressed=true;
+    let blob, fileBase=selectedVideo.name.replace(/\.[^.]+$/, ""), ext, compressed=true;
 
-    try{
+    try{
 
-      setStatus(videoStatus,"Compressing video for low-bandwidth playback (0%)… keep this tab open");
+      setStatus(videoStatus,"Compressing video for low-bandwidth playback (0%)… keep this tab open");
 
-      blob=await compressVideoFile(selectedVideo,p=>setStatus(videoStatus,`Compressing video: ${p}%… keep this tab open`));
+      blob=await compressVideoFile(selectedVideo,p=>setStatus(videoStatus,`Compressing video: ${p}%… keep this tab open`));
 
-      if(!blob.size) throw new Error("Empty output.");
+      if(!blob.size) throw new Error("Empty output.");
 
-      // if compression made it bigger, use the original
+      // if compression made it bigger, use the original
 
-      if(blob.size>=selectedVideo.size){ blob=selectedVideo; compressed=false; }
+      if(blob.size>=selectedVideo.size){ blob=selectedVideo; compressed=false; }
 
-    }catch(compErr){
+    }catch(compErr){
 
-      console.warn("Compression failed, using original:",compErr);
+      console.warn("Compression failed, using original:",compErr);
 
-      if(selectedVideo.size/1048576>MAX_DIRECT_VIDEO_MB) throw new Error("Compression failed ("+compErr.message+") and the original is too large to upload directly.");
+      if(selectedVideo.size/1048576>MAX_DIRECT_VIDEO_MB) throw new Error("Compression failed ("+compErr.message+") and the original is too large to upload directly.");
 
-      blob=selectedVideo; compressed=false;
+      blob=selectedVideo; compressed=false;
 
-    }
+    }
 
-    const type=(blob.type||selectedVideo.type||"video/mp4").split(";")[0];
+    const type=(blob.type||selectedVideo.type||"video/mp4").split(";")[0];
 
-    ext = compressed ? (type.includes("mp4")?".mp4":".webm") : ("."+(selectedVideo.name.split(".").pop()||"mp4"));
+    ext = compressed ? (type.includes("mp4")?".mp4":".webm") : ("."+(selectedVideo.name.split(".").pop()||"mp4"));
 
-    const comp=(blob.size/1048576).toFixed(2);
+    const comp=(blob.size/1048576).toFixed(2);
 
-    setStatus(videoStatus,`${compressed?"Optimized":"Uploading original"}: ${orig}MB → ${comp}MB. Uploading…`);
+    setStatus(videoStatus,`${compressed?"Optimized":"Uploading original"}: ${orig}MB → ${comp}MB. Uploading…`);
 
-    const data=await readAsDataURL(blob);
+    const data=await readAsDataURL(blob);
 
-    const r=await post({
+    const r=await post({
 
-      action:"uploadARVideo",
+      action:"uploadARVideo",
 
-      folderId:AR_VIDEO_FOLDER_ID,
+      folderId:AR_VIDEO_FOLDER_ID,
 
-      fileName:`${fileBase}${compressed?"_low_bandwidth":""}${ext}`,
+      fileName:`${fileBase}${compressed?"_low_bandwidth":""}${ext}`,
 
-      mimeType:type,
+      mimeType:type,
 
-      data,
+      data,
 
-      base64:splitDataURL(data)
+      base64:splitDataURL(data)
 
-    });
+    });
 
-    if(!r.success)throw new Error(r.error||"Server upload failed.");
+    if(!r.success)throw new Error(r.error||"Server upload failed.");
 
-    setStatus(videoStatus,`✓ Uploaded successfully (${comp} MB) and logged to Media_Logs.`);
+    setStatus(videoStatus,`✓ Uploaded successfully (${comp} MB) and logged to Media_Logs.`);
 
-  }catch(err){
+  }catch(err){
 
-    console.error(err);
+    console.error(err);
 
-    setStatus(videoStatus,"Upload failed: "+err.message,true);
+    setStatus(videoStatus,"Upload failed: "+err.message,true);
 
-  }finally{btn.disabled=false}
+  }finally{btn.disabled=false}
 
 };
 
@@ -680,13 +680,13 @@ const thumbUrl = f => f.thumb || f.thumbnail || f.thumbnailLink || `https://driv
 
 async function loadItems(cat){
 
-  const r=await post({action:"listProductImages",folderId:FOLDERS[cat]});
+  const r=await post({action:"listProductImages",folderId:FOLDERS[cat]});
 
-  if(!r.success)throw new Error(r.error||"Could not load products.");
+  if(!r.success)throw new Error(r.error||"Could not load products.");
 
-  if(!Array.isArray(r.files))throw new Error("Backend not updated (no 'files' list). Redeploy the Apps Script as a NEW version.");
+  if(!Array.isArray(r.files))throw new Error("Backend not updated (no 'files' list). Redeploy the Apps Script as a NEW version.");
 
-  return r.files.map(f=>({id:f.id||f.fileId,name:f.name||f.fileName||"(unnamed)",thumb:f.thumb||f.thumbnail||f.thumbnailLink||""})).filter(f=>f.id);
+  return r.files.map(f=>({id:f.id||f.fileId,name:f.name||f.fileName||"(unnamed)",thumb:f.thumb||f.thumbnail||f.thumbnailLink||""})).filter(f=>f.id);
 
 }
 
@@ -694,65 +694,65 @@ async function loadItems(cat){
 
 async function openCategory(cat){
 
-  curCat=cat;picked.clear();items=[];
+  curCat=cat;picked.clear();items=[];
 
-  $("delTitle").textContent=cat;thumbs.innerHTML="";updateDelBtn();
+  $("delTitle").textContent=cat;thumbs.innerHTML="";updateDelBtn();
 
-  setStatus(delStatus,"Loading products…");show("delprods");
+  setStatus(delStatus,"Loading products…");show("delprods");
 
-  try{
+  try{
 
-    items=await loadItems(cat);
+    items=await loadItems(cat);
 
-    setStatus(delStatus,items.length?"":"No products found in this category.");
+    setStatus(delStatus,items.length?"":"No products found in this category.");
 
-    renderThumbs();updateDelBtn();
+    renderThumbs();updateDelBtn();
 
-  }catch(err){console.error(err);setStatus(delStatus,"Failed: "+err.message,true)}
+  }catch(err){console.error(err);setStatus(delStatus,"Failed: "+err.message,true)}
 
 }
 
 function renderThumbs(){
 
-  thumbs.innerHTML="";
+  thumbs.innerHTML="";
 
-  items.forEach(f=>{
+  items.forEach(f=>{
 
-    const c=document.createElement("div");c.className="thumb"+(picked.has(f.id)?" sel":"");
+    const c=document.createElement("div");c.className="thumb"+(picked.has(f.id)?" sel":"");
 
-    const img=document.createElement("div");img.className="img";
+    const img=document.createElement("div");img.className="img";
 
-    img.style.backgroundImage=`url("${thumbUrl(f)}")`;
+    img.style.backgroundImage=`url("${thumbUrl(f)}")`;
 
-    const cb=document.createElement("input");cb.type="checkbox";cb.checked=picked.has(f.id);
+    const cb=document.createElement("input");cb.type="checkbox";cb.checked=picked.has(f.id);
 
-    const nm=document.createElement("div");nm.className="nm";nm.textContent=f.name;nm.title=f.name;
+    const nm=document.createElement("div");nm.className="nm";nm.textContent=f.name;nm.title=f.name;
 
-    const toggle=()=>{picked.has(f.id)?picked.delete(f.id):picked.add(f.id);c.classList.toggle("sel",picked.has(f.id));cb.checked=picked.has(f.id);updateDelBtn()};
+    const toggle=()=>{picked.has(f.id)?picked.delete(f.id):picked.add(f.id);c.classList.toggle("sel",picked.has(f.id));cb.checked=picked.has(f.id);updateDelBtn()};
 
-    c.onclick=e=>{if(e.target!==cb)toggle()};cb.onclick=e=>{e.stopPropagation();toggle()};
+    c.onclick=e=>{if(e.target!==cb)toggle()};cb.onclick=e=>{e.stopPropagation();toggle()};
 
-    c.append(img,cb,nm);thumbs.appendChild(c);
+    c.append(img,cb,nm);thumbs.appendChild(c);
 
-  });
+  });
 
 }
 
 function updateDelBtn(){
 
-  delBtn.disabled=!picked.size;
+  delBtn.disabled=!picked.size;
 
-  delBtn.textContent=picked.size?`DELETE SELECTED (${picked.size})`:"DELETE SELECTED";
+  delBtn.textContent=picked.size?`DELETE SELECTED (${picked.size})`:"DELETE SELECTED";
 
-  $("selAll").textContent=items.length&&picked.size===items.length?"UNSELECT ALL":"SELECT ALL";
+  $("selAll").textContent=items.length&&picked.size===items.length?"UNSELECT ALL":"SELECT ALL";
 
 }
 
 $("selAll").onclick=()=>{
 
-  if(picked.size===items.length)picked.clear();else items.forEach(f=>picked.add(f.id));
+  if(picked.size===items.length)picked.clear();else items.forEach(f=>picked.add(f.id));
 
-  renderThumbs();updateDelBtn();
+  renderThumbs();updateDelBtn();
 
 };
 
@@ -760,85 +760,85 @@ $("selAll").onclick=()=>{
 
 delBtn.onclick = async () => {
 
-  const ids=[...picked];
+  const ids=[...picked];
 
-  if(!ids.length)return;
+  if(!ids.length)return;
 
-  if(!confirm(`Delete ${ids.length} product image(s) from "${curCat}"?`))return;
+  if(!confirm(`Delete ${ids.length} product image(s) from "${curCat}"?`))return;
 
-  delBtn.disabled=true;
+  delBtn.disabled=true;
 
-  setStatus(delStatus,"Deleting products…");
+  setStatus(delStatus,"Deleting products…");
 
-  try{
+  try{
 
-    const r=await post({
+    const r=await post({
 
-      action:"deleteProductImages",
+      action:"deleteProductImages",
 
-      folderId:FOLDERS[curCat],
+      folderId:FOLDERS[curCat],
 
-      fileIds:ids,
+      fileIds:ids,
 
-      ids:ids
+      ids:ids
 
-    });
+    });
 
-    if(!r.success)throw new Error(r.error||"Delete failed.");
-
-
-
-    // Verify against Drive by reloading the list (works even if backend omits deletedIds)
-
-    let fresh=null;
-
-    try{ fresh=await loadItems(curCat); }catch(e){ console.warn("Reload failed",e); }
-
-    let deletedCount;
-
-    if(fresh){
-
-      const freshIds=new Set(fresh.map(f=>f.id));
-
-      deletedCount=ids.filter(id=>!freshIds.has(id)).length;
-
-      items=fresh;
-
-    }else{
-
-      const del=Array.isArray(r.deletedIds)?r.deletedIds:(r.deleted>0?ids:[]);
-
-      deletedCount=del.length;
-
-      items=items.filter(f=>!del.includes(f.id));
-
-    }
-
-    picked.clear();renderThumbs();updateDelBtn();
+    if(!r.success)throw new Error(r.error||"Delete failed.");
 
 
 
-    const skipped=Array.isArray(r.skipped)?r.skipped:[], errors=Array.isArray(r.errors)?r.errors:[];
+    // Verify against Drive by reloading the list (works even if backend omits deletedIds)
 
-    let msg = deletedCount>0
+    let fresh=null;
 
-      ? `✓ ${deletedCount} image(s) deleted from Drive. ${r.sheetRowsDeleted||0} spreadsheet row(s) removed.`
+    try{ fresh=await loadItems(curCat); }catch(e){ console.warn("Reload failed",e); }
 
-      : "No files were deleted. Check that the Apps Script owner has edit access to the folder.";
+    let deletedCount;
 
-    if(skipped.length||errors.length){ console.error("Deletion details:",r); msg+=` ${skipped.length} skipped, ${errors.length} error(s).`; }
+    if(fresh){
 
-    setStatus(delStatus,msg,deletedCount===0);
+      const freshIds=new Set(fresh.map(f=>f.id));
 
-  }catch(err){
+      deletedCount=ids.filter(id=>!freshIds.has(id)).length;
 
-    console.error(err);
+      items=fresh;
 
-    setStatus(delStatus,"Delete failed: "+err.message,true);
+    }else{
 
-    updateDelBtn();
+      const del=Array.isArray(r.deletedIds)?r.deletedIds:(r.deleted>0?ids:[]);
 
-  }
+      deletedCount=del.length;
+
+      items=items.filter(f=>!del.includes(f.id));
+
+    }
+
+    picked.clear();renderThumbs();updateDelBtn();
+
+
+
+    const skipped=Array.isArray(r.skipped)?r.skipped:[], errors=Array.isArray(r.errors)?r.errors:[];
+
+    let msg = deletedCount>0
+
+      ? `✓ ${deletedCount} image(s) deleted from Drive. ${r.sheetRowsDeleted||0} spreadsheet row(s) removed.`
+
+      : "No files were deleted. Check that the Apps Script owner has edit access to the folder.";
+
+    if(skipped.length||errors.length){ console.error("Deletion details:",r); msg+=` ${skipped.length} skipped, ${errors.length} error(s).`; }
+
+    setStatus(delStatus,msg,deletedCount===0);
+
+  }catch(err){
+
+    console.error(err);
+
+    setStatus(delStatus,"Delete failed: "+err.message,true);
+
+    updateDelBtn();
+
+  }
 
 };
 
