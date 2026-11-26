@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#1a0f0a" />
+  <title>CHOCO·AI | Vault Media Manager</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #1a0f0a;
+      --bg-2: #2a1810;
+      --gold: #D4AF37;
+      --gold-soft: #F0D687;
+      --cream: #F5EFE6;
+      --muted: rgba(245, 239, 230, 0.62);
+      --line: rgba(212, 175, 55, 0.30);
+      --card: rgba(255, 255, 255, 0.03);
+      --danger: #e63946;
+      --ok: #57cc99;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 50% -10%, rgba(107, 58, 31, 0.45) 0%, transparent 55%),
+        linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 100%);
+      color: var(--cream);
+      font-family: 'Manrope', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .wrap {
+      width: min(980px, 94vw);
+      margin: 26px auto;
+      padding: 26px;
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: rgba(26, 15, 10, 0.86);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.65);
+    }
+
+    .brand-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin: 0;
+      color: var(--gold-soft);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    h1::before {
+      content: "";
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 10px var(--gold);
+    }
+
+    .sub {
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 1px;
+      margin-top: 3px;
+    }
+
+    .pill-badge {
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      font-size: 11px;
+      color: var(--gold-soft);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .view { display: none; }
+    .view.active { display: block; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold-soft);
+      margin: 0 0 7px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="search"],
+    select,
+    textarea {
+      width: 100%;
+      height: 44px;
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 12px;
+      background: #120a06;
+      color: var(--cream);
+      padding: 0 14px;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    textarea {
+      height: 74px;
+      padding: 10px 14px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+
+    .drop, .video-drop {
+      margin-top: 14px;
+      border: 1.5px dashed var(--line);
+      border-radius: 16px;
+      min-height: 132px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.015);
+      transition: 0.2s;
+      overflow: hidden;
+      padding: 16px;
+      position: relative;
+    }
+    .drop.drag, .video-drop.drag {
+      background: rgba(212, 175, 55, 0.09);
+      border-color: var(--gold);
+    }
+    .drop strong, .video-drop strong {
+      display: block;
+      color: var(--gold-soft);
+      font-size: 12px;
+      letter-spacing: 0.8px;
+    }
+    .drop span, .video-drop span {
+      font-size: 11px;
+      color: var(--muted);
+      display: block;
+      margin-top: 4px;
+    }
+
+    .preview {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .preview-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #120a06;
+    }
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .preview-tag {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 4px 6px;
+      background: rgba(18, 10, 6, 0.82);
+      font-size: 9px;
+      color: var(--gold-soft);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .remove-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.82);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      line-height: 1;
+    }
+    .remove-btn:hover { background: var(--danger); border-color: var(--danger); }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      height: 46px;
+      padding: 0 22px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.2s;
+    }
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .gold { background: linear-gradient(135deg, var(--gold-soft), var(--gold)); color: #1a0f0a; }
+    .dark { background: #2a1810; border: 1px solid var(--line); color: var(--gold-soft); }
+    .red { background: linear-gradient(135deg, #f05a66, #b3202c); color: #fff; }
+
+    .actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .actions .btn { flex: 1; min-width: 140px; }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      margin-top: 14px;
+      display: none;
+    }
+    .progress-bar.show { display: block; }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--gold), var(--gold-soft));
+      transition: width 0.25s ease;
+    }
+
+    .status {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--gold-soft);
+      min-height: 18px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+    .status.err { color: #ff8b94; }
+    .status.ok { color: var(--ok); }
+
+    .info {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--card);
+      font-size: 12px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+    .info b { color: var(--gold-soft); }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      background: rgba(255, 255, 255, 0.02);
+      font-size: 12px;
+      color: var(--cream);
+      cursor: pointer;
+      user-select: none;
+    }
+    .toggle-row input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+
+    .media-section {
+      margin-top: 26px;
+      padding-top: 22px;
+      border-top: 1px solid rgba(212, 175, 55, 0.18);
+    }
+    .media-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .media-title h2 {
+      font-size: 13px;
+      margin: 0;
+      letter-spacing: 1.2px;
+      color: var(--gold-soft);
+      text-transform: uppercase;
+    }
+    .media-title span { font-size: 11px; color: var(--muted); }
+
+    .video-stage {
+      position: relative;
+      display: none;
+      width: 100%;
+      max-width: 340px;
+      margin: 0 auto;
+    }
+    .video-stage.show { display: block; }
+    .video-stage video {
+      width: 100%;
+      max-height: 260px;
+      border-radius: 10px;
+      object-fit: contain;
+      display: block;
+      background: #000;
+    }
+    .ar-crop-guide {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 86%;
+      aspect-ratio: 1 / 1;
+      border: 1.5px dashed rgba(240, 214, 135, 0.85);
+      border-radius: 6px;
+      pointer-events: none;
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.28);
+      display: none;
+    }
+    .video-stage.show-guide .ar-crop-guide { display: block; }
+    .ar-crop-guide::after {
+      content: "1:1 AR CARD CROP";
+      position: absolute;
+      top: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--gold-soft);
+      background: rgba(26, 15, 10, 0.8);
+      padding: 2px 7px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .video-name {
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .video-opts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .video-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+    .video-actions .btn { flex: 1; min-width: 160px; }
+
+    .back {
+      background: none;
+      border: 0;
+      color: var(--gold-soft);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      margin-bottom: 16px;
+      padding: 0;
+    }
+
+    .choices {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 8px;
+    }
+    .choice {
+      padding: 44px 20px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: var(--card);
+      color: var(--gold-soft);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.2s;
+    }
+    .choice:hover {
+      border-color: var(--gold);
+      background: rgba(212, 175, 55, 0.09);
+      transform: translateY(-2px);
+    }
+    .choice small {
+      display: block;
+      margin-top: 8px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0;
+      font-size: 11px;
+    }
+    .choice.del:hover {
+      border-color: var(--danger);
+      background: rgba(230, 57, 70, 0.09);
+    }
+
+    .cats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    .cats .choice { padding: 28px 16px; font-size: 14px; }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .toolbar h2 {
+      margin: 0;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      color: var(--gold-soft);
+    }
+
+    .del-filter {
+      margin-bottom: 14px;
+      max-width: 320px;
+    }
+
+    .thumbs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .thumb {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      background: #120a06;
+      transition: border-color 0.2s;
+    }
+    .thumb.sel {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 2px var(--danger);
+    }
+    .thumb .img {
+      aspect-ratio: 1;
+      background: #241610 center / cover no-repeat;
+    }
+    .thumb .nm {
+      padding: 8px 9px;
+      font-size: 11px;
+      color: var(--cream);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .thumb input {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      width: 20px;
+      height: 20px;
+      accent-color: var(--danger);
+      cursor: pointer;
+    }
+
+    @media (max-width: 720px) {
+      .grid, .choices, .cats, .video-opts, .field-row { grid-template-columns: 1fr; }
+      .wrap { margin: 10px auto; padding: 18px; border-radius: 20px; }
+      .preview { grid-template-columns: repeat(3, 1fr); }
+      .thumbs { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand-head">
+      <div>
+        <h1>CHOCO·AI VAULT</h1>
+        <div class="sub">Live Drive Catalog &amp; AR Video Manager</div>
+      </div>
+      <div class="pill-badge">Live Drive Sync</div>
+    </div>
+
+    <!-- HOME -->
+    <div class="view active" id="v-home">
+      <div class="choices">
+        <button class="choice" data-go="upload">
+          📤 UPLOAD PRODUCT / AR VIDEO
+          <small>Add catalog photos &amp; update the AR card showcase</small>
+        </button>
+        <button class="choice del" data-go="delcats">
+          🗑️ MANAGE &amp; DELETE PRODUCTS
+          <small>Browse folders and remove outdated chocolates</small>
+        </button>
+      </div>
+    </div>
+
+    <!-- UPLOAD -->
+    <div class="view" id="v-upload">
+      <button class="back" data-go="home">← Back to Home</button>
+
+      <div class="grid">
+        <section>
+          <label for="productName">Product Name (Shown in Catalog)</label>
+          <input id="productName" type="text" placeholder="E.g., Hazelnut Praline Truffle" autocomplete="off" />
+
+          <div style="height:14px"></div>
+
+          <label for="category">Product Category</label>
+          <select id="category"><option value="">Select category…</option></select>
+
+          <div class="field-row">
+            <div>
+              <label for="weightPack">Weight / Pack</label>
+              <input id="weightPack" type="text" placeholder="E.g., 250g / Box of 12" autocomplete="off" />
+            </div>
+            <div>
+              <label for="price">Price (₹)</label>
+              <input id="price" type="number" min="0" step="1" placeholder="E.g., 450" autocomplete="off" />
+            </div>
+          </div>
+
+          <div style="height:14px"></div>
+
+          <label for="description">Description (Optional)</label>
+          <textarea id="description" placeholder="E.g., Handcrafted dark chocolate filled with roasted hazelnut praline"></textarea>
+
+          <div class="drop" id="drop">
+            <div>
+              <strong>📷 DROP OR SELECT CATALOGUE IMAGES</strong>
+              <span>JPG, PNG, WEBP • Multi-photo items auto-group into one product</span>
+            </div>
+          </div>
+          <input id="files" type="file" accept="image/*" multiple hidden />
+          <div class="preview" id="preview"></div>
+        </section>
+
+        <section>
+          <div class="info">
+            <b>Live AR Catalog &amp; Sheet Sync</b><br />
+            Images are auto-named from your Product Name (e.g. <b>Dark Truffle.jpg</b> or <b>Dark Truffle 1.jpg</b>) and logged to your <b>CHOCOLATES</b> sheet with Weight/Pack, Price, and Description.<br /><br />
+            <span id="routeList"></span>
+          </div>
+
+          <label class="toggle-row">
+            <input type="checkbox" id="optImages" checked />
+            <span>Auto-optimize images (max 1400px, fast mobile loading)</span>
+          </label>
+
+          <div class="actions">
+            <button class="btn dark" id="clear" type="button">Clear All</button>
+            <button class="btn gold" id="upload" type="button">Upload Product</button>
+          </div>
+
+          <div class="progress-bar" id="imgProgressBar"><div class="progress-fill" id="imgProgressFill"></div></div>
+          <div class="status" id="status"></div>
+        </section>
+      </div>
+
+      <!-- AR VIDEO SECTION -->
+      <section class="media-section">
+        <div class="media-title">
+          <h2>AR Experience Video (Card Target)</h2>
+          <span>Most recent upload plays automatically on the AR card</span>
+        </div>
+
+        <div class="video-drop" id="videoDrop">
+          <div id="videoPlaceholder">
+            <strong>🎬 DROP OR SELECT AR VIDEO</strong>
+            <span>MP4 (H.264 + AAC) recommended for iPhone &amp; Android audio playback</span>
+          </div>
+          <div class="video-stage" id="videoStage">
+            <video id="videoPreview" controls playsinline></video>
+            <div class="ar-crop-guide"></div>
+          </div>
+        </div>
+        <input id="videoFile" type="file" accept="video/mp4,video/webm,video/quicktime" hidden />
+        <div class="video-name" id="videoName">Awaiting video file…</div>
+
+        <div class="video-opts">
+          <label class="toggle-row" style="margin-top:0">
+            <input type="checkbox" id="keepOriginalVideo" checked />
+            <span>Keep original MP4 (best for iPhone &amp; sound, ≤25 MB)</span>
+          </label>
+          <label class="toggle-row" style="margin-top:0">
+            <input type="checkbox" id="toggleCropGuide" checked />
+            <span>Show 1:1 AR square crop preview</span>
+          </label>
+        </div>
+
+        <div class="video-actions">
+          <button class="btn dark" id="clearVideo" type="button">Clear Video</button>
+          <button class="btn gold" id="uploadVideo" type="button">Upload AR Video</button>
+        </div>
+        <div class="progress-bar" id="vidProgressBar"><div class="progress-fill" id="vidProgressFill"></div></div>
+        <div class="status" id="videoStatus"></div>
+      </section>
+    </div>
+
+    <!-- DELETE: CATEGORIES -->
+    <div class="view" id="v-delcats">
+      <button class="back" data-go="home">← Back to Home</button>
+      <div class="toolbar"><h2>Select a Category</h2></div>
+      <div class="cats" id="catList"></div>
+    </div>
+
+    <!-- DELETE: PRODUCTS -->
+    <div class="view" id="v-delprods">
+      <button class="back" data-go="delcats">← Categories</button>
+      <div class="toolbar">
+        <h2 id="delTitle"></h2>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn dark" id="selAll" type="button">Select All</button>
+          <button class="btn red" id="delBtn" type="button" disabled>Delete Selected</button>
+        </div>
+      </div>
+      <div class="del-filter">
+        <input id="delSearch" type="search" placeholder="Filter products in this folder…" autocomplete="off" />
+      </div>
+      <div class="thumbs" id="thumbs"></div>
+      <div class="status" id="delStatus"></div>
+    </div>
+  </div>
+
+  <script>
+    /* ======================================================
+       CONFIGURATION (MATCHES CHOCO·AI LIVE DRIVE AR)
+    ====================================================== */
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxM6aBKWlivhMyOIchmCk5ItGvINDPVcZ5Awhi84by6WPDHQKlJP-h71NoTcBA-ZSWy/exec";
+    const AR_VIDEO_FOLDER_ID = "1jRyVReP4cq7yk1VqwdFCMt0w4on4S77Q";
+
+    const FOLDERS = {
+      "Gift & Souvenir":     "17ySewgdqCobAmmA2GJQr26dTOZ2_i_QP",
+      "Classic Homemade":    "1MNyNI74BCiWLIYlLa47_rdNOk9VyPAv6",
+      "Flavoured & Gourmet": "1W3asJarlw4jzVYxiHH3572tR34qqZrrl",
+      "Nuts & Dry Fruit":    "1nKxR0fYLYx7_NE068EbglJLVyOJ6Uc4L",
+      "Premium & Luxury":    "1Dmdcl3emFUjStD4-fQczCHly_SXxnI46"
+    };
+
+    const MAX_DIRECT_VIDEO_MB = 25;
+    const MAX_IMG_DIM = 1400;
+    const IMG_QUALITY = 0.86;
+
+    const $ = id => document.getElementById(id);
+
+    /* ---------- Backend Call ---------- */
+    async function post(payload) {
+      let response;
+      try {
+        response = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {
+        throw new Error("Cannot reach Apps Script (network/CORS). Deploy as Web App with 'Execute as: Me' and 'Who has access: Anyone'.");
+      }
+      const text = await response.text();
+      let json;
+      try {
+        json = JSON.parse(text);
+      } catch (e) {
+        throw new Error("Apps Script did not return JSON. Redeploy Web App with access 'Anyone'. Response: " + text.slice(0, 120).replace(/\s+/g, " "));
+      }
+      if (!response.ok) throw new Error(json.error || `HTTP ${response.status}`);
+      return json;
+    }
+
+    function setStatus(el, msg, type = "") {
+      el.textContent = msg;
+      el.classList.remove("err", "ok");
+      if (type) el.classList.add(type);
+    }
+
+    function setProgress(bar, fill, pct) {
+      if (pct <= 0) {
+        bar.classList.remove("show");
+        fill.style.width = "0%";
+      } else {
+        bar.classList.add("show");
+        fill.style.width = Math.min(100, Math.round(pct)) + "%";
+      }
+    }
+
+    /* ---------- Navigation ---------- */
+    function show(v) {
+      document.querySelectorAll(".view").forEach(e => e.classList.toggle("active", e.id === "v-" + v));
+    }
+    document.addEventListener("click", e => {
+      const b = e.target.closest("[data-go]");
+      if (b) show(b.dataset.go);
+    });
+
+    Object.keys(FOLDERS).forEach(c => {
+      $("category").add(new Option(c, c));
+      const line = document.createElement("div");
+      line.innerHTML = "• <b></b>";
+      line.querySelector("b").textContent = c;
+      $("routeList").appendChild(line);
+
+      const b = document.createElement("button");
+      b.className = "choice";
+      b.textContent = c;
+      b.onclick = () => openCategory(c);
+      $("catList").appendChild(b);
+    });
+
+    /* ---------- File Helpers ---------- */
+    const readAsDataURL = blob => new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = () => rej(new Error("Could not read file."));
+      r.readAsDataURL(blob);
+    });
+
+    const splitDataURL = d => {
+      const i = d.indexOf(",");
+      return i >= 0 ? d.slice(i + 1) : d;
+    };
+
+    function cleanProductBase(name) {
+      return name
+        .replace(/[\\/:*?"<>|]+/g, "")
+        .replace(/[-_]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function buildTargetFileName(baseName, index, total, ext) {
+      const clean = cleanProductBase(baseName) || "Chocolate";
+      return total > 1 ? `${clean} ${index + 1}.${ext}` : `${clean}.${ext}`;
+    }
+
+    async function optimizeImage(file) {
+      const url = URL.createObjectURL(file);
+      try {
+        const img = await new Promise((res, rej) => {
+          const el = new Image();
+          el.onload = () => res(el);
+          el.onerror = () => rej(new Error("Could not decode image."));
+          el.src = url;
+        });
+
+        let w = img.naturalWidth || img.width;
+        let h = img.naturalHeight || img.height;
+        if (w > MAX_IMG_DIM || h > MAX_IMG_DIM) {
+          if (w >= h) { h = Math.round(h * MAX_IMG_DIM / w); w = MAX_IMG_DIM; }
+          else { w = Math.round(w * MAX_IMG_DIM / h); h = MAX_IMG_DIM; }
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const keepPng = file.type === "image/png" && file.size < 1.2 * 1048576;
+        const outMime = keepPng ? "image/png" : "image/jpeg";
+        const ext = keepPng ? "png" : "jpg";
+
+        const blob = await new Promise(res => canvas.toBlob(res, outMime, IMG_QUALITY));
+        if (!blob || blob.size >= file.size) {
+          const origExt = (file.name.split(".").pop() || ext).toLowerCase();
+          return { blob: file, mimeType: file.type || outMime, ext: origExt };
+        }
+        return { blob, mimeType: outMime, ext };
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    /* ======================================================
+       PRODUCT IMAGE UPLOAD
+    ====================================================== */
+    const drop = $("drop"), filesEl = $("files"), preview = $("preview"), statusEl = $("status");
+    const productNameInput = $("productName");
+    let selected = [];
+
+    drop.onclick = () => filesEl.click();
+    drop.ondragover = e => { e.preventDefault(); drop.classList.add("drag"); };
+    drop.ondragleave = () => drop.classList.remove("drag");
+    drop.ondrop = e => {
+      e.preventDefault();
+      drop.classList.remove("drag");
+      addFiles([...e.dataTransfer.files]);
+    };
+    filesEl.onchange = () => {
+      addFiles([...filesEl.files]);
+      filesEl.value = "";
+    };
+    productNameInput.addEventListener("input", renderPreview);
+
+    function addFiles(list) {
+      selected = [...selected, ...list.filter(f => f.type.startsWith("image/"))];
+      renderPreview();
+    }
+
+    function renderPreview() {
+      preview.innerHTML = "";
+      const base = cleanProductBase(productNameInput.value) || "Product";
+      selected.forEach((file, i) => {
+        const c = document.createElement("div");
+        c.className = "preview-item";
+
+        const img = document.createElement("img");
+        img.src = URL.createObjectURL(file);
+        img.onload = () => URL.revokeObjectURL(img.src);
+
+        const tag = document.createElement("div");
+        tag.className = "preview-tag";
+        tag.textContent = selected.length > 1 ? `${base} ${i + 1}` : base;
+
+        const r = document.createElement("button");
+        r.className = "remove-btn";
+        r.type = "button";
+        r.innerHTML = "×";
+        r.onclick = e => {
+          e.stopPropagation();
+          selected.splice(i, 1);
+          renderPreview();
+        };
+
+        c.append(img, tag, r);
+        preview.appendChild(c);
+      });
+    }
+
+    function resetProductForm() {
+      selected = [];
+      filesEl.value = "";
+      preview.innerHTML = "";
+      productNameInput.value = "";
+      $("weightPack").value = "";
+      $("price").value = "";
+      $("description").value = "";
+    }
+
+    $("clear").onclick = () => {
+      resetProductForm();
+      setProgress($("imgProgressBar"), $("imgProgressFill"), 0);
+      setStatus(statusEl, "");
+    };
+
+    $("upload").onclick = async () => {
+      const name = cleanProductBase(productNameInput.value);
+      const category = $("category").value;
+      const weightPack = $("weightPack").value.trim();
+      const price = $("price").value.trim();
+      const description = $("description").value.trim();
+
+      if (!name) return alert("Please enter Product Name.");
+      if (!category) return alert("Please select Product Category.");
+      if (!selected.length) return alert("Please select at least one catalogue image.");
+
+      const btn = $("upload");
+      btn.disabled = true;
+      const total = selected.length;
+      const shouldOptimize = $("optImages").checked;
+
+      try {
+        for (let i = 0; i < total; i++) {
+          const pctStart = (i / total) * 100;
+          setProgress($("imgProgressBar"), $("imgProgressFill"), Math.max(8, pctStart));
+          setStatus(statusEl, `Preparing & uploading ${i + 1} of ${total}…`);
+
+          const origFile = selected[i];
+          let payloadBlob = origFile;
+          let mimeType = origFile.type || "image/jpeg";
+          let ext = (origFile.name.split(".").pop() || "jpg").toLowerCase();
+
+          if (shouldOptimize) {
+            const opt = await optimizeImage(origFile);
+            payloadBlob = opt.blob;
+            mimeType = opt.mimeType;
+            ext = opt.ext;
+          }
+
+          const targetFileName = buildTargetFileName(name, i, total, ext);
+          const data = await readAsDataURL(payloadBlob);
+
+          const r = await post({
+            action: "uploadProductImage",
+            folderId: FOLDERS[category],
+            category,
+            productName: name,
+            weightPack,
+            price,
+            description,
+            fileName: targetFileName,
+            mimeType,
+            data,
+            base64: splitDataURL(data)
+          });
+
+          if (!r.success) throw new Error(r.error || `Upload failed for ${targetFileName}`);
+          setProgress($("imgProgressBar"), $("imgProgressFill"), ((i + 1) / total) * 100);
+        }
+
+        setStatus(statusEl, `✓ Uploaded "${name}" (${total} photo${total > 1 ? "s" : ""}) to ${category}. Live in CHOCO·AI now!`, "ok");
+        resetProductForm();
+        setTimeout(() => setProgress($("imgProgressBar"), $("imgProgressFill"), 0), 1200);
+      } catch (err) {
+        console.error(err);
+        setStatus(statusEl, "Upload failed: " + err.message, "err");
+        setProgress($("imgProgressBar"), $("imgProgressFill"), 0);
+      } finally {
+        btn.disabled = false;
+      }
+    };
+
+    /* ======================================================
+       AR VIDEO UPLOAD (WITH 1:1 CROP GUIDE & AUDIO SUPPORT)
+    ====================================================== */
+    const videoDrop = $("videoDrop"), videoFileEl = $("videoFile");
+    const videoStage = $("videoStage"), videoPreview = $("videoPreview");
+    const videoPlaceholder = $("videoPlaceholder"), videoName = $("videoName");
+    const videoStatus = $("videoStatus");
+    let selectedVideo = null;
+
+    function syncCropGuide() {
+      videoStage.classList.toggle("show-guide", $("toggleCropGuide").checked);
+    }
+    $("toggleCropGuide").addEventListener("change", syncCropGuide);
+    syncCropGuide();
+
+    videoDrop.onclick = e => {
+      if (e.target.tagName !== "VIDEO") videoFileEl.click();
+    };
+    videoDrop.ondragover = e => { e.preventDefault(); videoDrop.classList.add("drag"); };
+    videoDrop.ondragleave = () => videoDrop.classList.remove("drag");
+    videoDrop.ondrop = e => {
+      e.preventDefault();
+      videoDrop.classList.remove("drag");
+      const f = [...e.dataTransfer.files].find(f => f.type.startsWith("video/"));
+      f ? setVideo(f) : alert("Please select an MP4, WebM, or MOV video file.");
+    };
+    videoFileEl.onchange = () => {
+      if (videoFileEl.files[0]) setVideo(videoFileEl.files[0]);
+    };
+
+    function setVideo(f) {
+      selectedVideo = f;
+      videoPreview.src = URL.createObjectURL(f);
+      videoStage.classList.add("show");
+      videoPlaceholder.style.display = "none";
+      const mb = (f.size / 1048576).toFixed(2);
+      videoName.textContent = `${f.name} (${mb} MB)`;
+      if (f.size / 1048576 > MAX_DIRECT_VIDEO_MB && $("keepOriginalVideo").checked) {
+        setStatus(videoStatus, `Note: File is ${mb} MB (> ${MAX_DIRECT_VIDEO_MB} MB). Uncheck "Keep original MP4" to compress in browser, or pre-compress to MP4.`, "err");
+      } else {
+        setStatus(videoStatus, "");
+      }
+    }
+
+    function clearVideo() {
+      selectedVideo = null;
+      videoFileEl.value = "";
+      videoPreview.pause();
+      videoPreview.removeAttribute("src");
+      videoPreview.load();
+      videoStage.classList.remove("show");
+      videoPlaceholder.style.display = "block";
+      videoName.textContent = "Awaiting video file…";
+      setProgress($("vidProgressBar"), $("vidProgressFill"), 0);
+      setStatus(videoStatus, "");
+    }
+    $("clearVideo").onclick = clearVideo;
+
+    function compressVideoFile(file, onProgress) {
+      return new Promise((resolve, reject) => {
+        if (typeof MediaRecorder === "undefined" || !HTMLCanvasElement.prototype.captureStream) {
+          return reject(new Error("Compression not supported in this browser."));
+        }
+        const video = document.createElement("video");
+        const url = URL.createObjectURL(file);
+        video.src = url;
+        video.playsInline = true;
+        video.muted = false;
+        video.volume = 0.0001;
+
+        let finished = false, anim = null, rec = null, audioCtx = null;
+        const cleanup = () => {
+          cancelAnimationFrame(anim);
+          URL.revokeObjectURL(url);
+          if (audioCtx) { try { audioCtx.close(); } catch (e) {} }
+        };
+        const fail = err => {
+          if (finished) return;
+          finished = true;
+          cleanup();
+          reject(err instanceof Error ? err : new Error("Video compression failed."));
+        };
+
+        video.onerror = () => fail(new Error("Browser cannot decode this video."));
+        video.onloadedmetadata = () => {
+          let w = video.videoWidth || 640, h = video.videoHeight || 480;
+          if (w > 720) { h = Math.round(h * 720 / w); w = 720; }
+          if (w % 2) w--;
+          if (h % 2) h--;
+
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          const canvasStream = canvas.captureStream(25);
+
+          const tracks = [...canvasStream.getVideoTracks()];
+          try {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (AC) {
+              audioCtx = new AC();
+              const srcNode = audioCtx.createMediaElementSource(video);
+              const dest = audioCtx.createMediaStreamDestination();
+              srcNode.connect(dest);
+              dest.stream.getAudioTracks().forEach(t => tracks.push(t));
+            }
+          } catch (audioErr) {
+            console.warn("Audio capture skipped:", audioErr);
+          }
+
+          const combinedStream = new MediaStream(tracks);
+          const candidates = [
+            "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+            "video/mp4",
+            "video/webm;codecs=vp8,opus",
+            "video/webm;codecs=vp8",
+            "video/webm"
+          ];
+          const mime = candidates.find(m => MediaRecorder.isTypeSupported(m)) || "video/webm";
+
+          const chunks = [];
+          try {
+            rec = new MediaRecorder(combinedStream, { mimeType: mime, videoBitsPerSecond: 900000 });
+          } catch (e) {
+            return fail(e);
+          }
+
+          rec.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+          rec.onstop = () => {
+            if (finished) return;
+            finished = true;
+            cleanup();
+            resolve(new Blob(chunks, { type: mime.split(";")[0] }));
+          };
+          rec.onerror = () => fail(new Error("Recorder error."));
+
+          const draw = () => {
+            if (finished) return;
+            if (video.ended) { if (rec.state !== "inactive") rec.stop(); return; }
+            ctx.drawImage(video, 0, 0, w, h);
+            if (onProgress && video.duration) {
+              onProgress(Math.min(100, Math.round((video.currentTime / video.duration) * 100)));
+            }
+            anim = requestAnimationFrame(draw);
+          };
+
+          video.onended = () => { if (rec.state !== "inactive") rec.stop(); };
+          rec.start(200);
+          video.play().then(draw).catch(fail);
+        };
+      });
+    }
+
+    $("uploadVideo").onclick = async () => {
+      if (!selectedVideo) return alert("Please select an AR video first.");
+      const btn = $("uploadVideo");
+      btn.disabled = true;
+
+      try {
+        const origMB = (selectedVideo.size / 1048576).toFixed(2);
+        const keepOrig = $("keepOriginalVideo").checked;
+        let blob = selectedVideo;
+        let compressed = false;
+
+        if (!keepOrig) {
+          try {
+            setStatus(videoStatus, "Compressing video (0%)… keep this tab open");
+            setProgress($("vidProgressBar"), $("vidProgressFill"), 5);
+            const out = await compressVideoFile(selectedVideo, p => {
+              setStatus(videoStatus, `Compressing video: ${p}%… keep this tab open`);
+              setProgress($("vidProgressBar"), $("vidProgressFill"), Math.max(5, p * 0.75));
+            });
+            if (out && out.size > 0 && out.size < selectedVideo.size) {
+              blob = out;
+              compressed = true;
+            }
+          } catch (compErr) {
+            console.warn("Compression failed, falling back to original:", compErr);
+            if (selectedVideo.size / 1048576 > MAX_DIRECT_VIDEO_MB) {
+              throw new Error(`Compression failed (${compErr.message}) and original exceeds ${MAX_DIRECT_VIDEO_MB} MB.`);
+            }
+          }
+        } else if (selectedVideo.size / 1048576 > MAX_DIRECT_VIDEO_MB) {
+          throw new Error(`Video is ${origMB} MB (limit ${MAX_DIRECT_VIDEO_MB} MB). Uncheck "Keep original MP4" to compress it first.`);
+        }
+
+        const type = (blob.type || selectedVideo.type || "video/mp4").split(";")[0];
+        const fileBase = cleanProductBase(selectedVideo.name.replace(/\.[^.]+$/, "")) || "AR_Video";
+        const ext = compressed
+          ? (type.includes("mp4") ? ".mp4" : ".webm")
+          : ("." + (selectedVideo.name.split(".").pop() || "mp4").toLowerCase());
+
+        const finalMB = (blob.size / 1048576).toFixed(2);
+        setProgress($("vidProgressBar"), $("vidProgressFill"), 85);
+        setStatus(videoStatus, `${compressed ? `Optimized ${origMB} MB → ${finalMB} MB.` : `Uploading original (${finalMB} MB).`} Sending to Drive…`);
+
+        const data = await readAsDataURL(blob);
+        const r = await post({
+          action: "uploadARVideo",
+          folderId: AR_VIDEO_FOLDER_ID,
+          fileName: `${fileBase}${compressed ? "_ar" : ""}${ext}`,
+          mimeType: type,
+          data,
+          base64: splitDataURL(data)
+        });
+
+        if (!r.success) throw new Error(r.error || "Server upload failed.");
+        setProgress($("vidProgressBar"), $("vidProgressFill"), 100);
+
+        const webmNote = ext === ".webm" ? " (Note: WebM may not play on iPhone Safari; MP4 is recommended.)" : "";
+        setStatus(videoStatus, `✓ AR video uploaded (${finalMB} MB). It will now play automatically on the AR card!${webmNote}`, "ok");
+        setTimeout(() => setProgress($("vidProgressBar"), $("vidProgressFill"), 0), 1200);
+      } catch (err) {
+        console.error(err);
+        setStatus(videoStatus, "Upload failed: " + err.message, "err");
+        setProgress($("vidProgressBar"), $("vidProgressFill"), 0);
+      } finally {
+        btn.disabled = false;
+      }
+    };
+
+    /* ======================================================
+       MANAGE & DELETE PRODUCTS
+    ====================================================== */
+    let curCat = "", items = [], picked = new Set(), delFilter = "";
+    const thumbs = $("thumbs"), delBtn = $("delBtn"), delStatus = $("delStatus");
+
+    const thumbUrl = f => f.thumb || f.thumbnail || f.thumbnailLink || `https://drive.google.com/thumbnail?id=${encodeURIComponent(f.id)}&sz=w400`;
+
+    async function loadItems(cat) {
+      const r = await post({ action: "listProductImages", folderId: FOLDERS[cat] });
+      if (!r.success) throw new Error(r.error || "Could not load products.");
+      if (!Array.isArray(r.files)) throw new Error("Backend not updated (no 'files' list). Redeploy Apps Script as a NEW version.");
+      return r.files
+        .map(f => ({
+          id: f.id || f.fileId,
+          name: f.name || f.fileName || "(unnamed)",
+          thumb: f.thumb || f.thumbnail || f.thumbnailLink || ""
+        }))
+        .filter(f => f.id);
+    }
+
+    async function openCategory(cat) {
+      curCat = cat;
+      picked.clear();
+      items = [];
+      delFilter = "";
+      $("delSearch").value = "";
+      $("delTitle").textContent = cat;
+      thumbs.innerHTML = "";
+      updateDelBtn();
+      setStatus(delStatus, "Loading products…");
+      show("delprods");
+
+      try {
+        items = await loadItems(cat);
+        setStatus(delStatus, items.length ? `${items.length} file(s) in folder.` : "No products found in this category.");
+        renderThumbs();
+        updateDelBtn();
+      } catch (err) {
+        console.error(err);
+        setStatus(delStatus, "Failed: " + err.message, "err");
+      }
+    }
+
+    function getFilteredItems() {
+      if (!delFilter) return items;
+      const q = delFilter.toLowerCase();
+      return items.filter(f => f.name.toLowerCase().includes(q));
+    }
+
+    $("delSearch").addEventListener("input", e => {
+      delFilter = e.target.value.trim();
+      renderThumbs();
+      updateDelBtn();
+    });
+
+    function renderThumbs() {
+      thumbs.innerHTML = "";
+      const list = getFilteredItems();
+      list.forEach(f => {
+        const c = document.createElement("div");
+        c.className = "thumb" + (picked.has(f.id) ? " sel" : "");
+
+        const img = document.createElement("div");
+        img.className = "img";
+        img.style.backgroundImage = `url("${thumbUrl(f)}")`;
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.checked = picked.has(f.id);
+
+        const nm = document.createElement("div");
+        nm.className = "nm";
+        nm.textContent = f.name.replace(/\.[^/.]+$/, "");
+        nm.title = f.name;
+
+        const toggle = () => {
+          picked.has(f.id) ? picked.delete(f.id) : picked.add(f.id);
+          c.classList.toggle("sel", picked.has(f.id));
+          cb.checked = picked.has(f.id);
+          updateDelBtn();
+        };
+
+        c.onclick = e => { if (e.target !== cb) toggle(); };
+        cb.onclick = e => { e.stopPropagation(); toggle(); };
+        c.append(img, cb, nm);
+        thumbs.appendChild(c);
+      });
+    }
+
+    function updateDelBtn() {
+      const visible = getFilteredItems();
+      delBtn.disabled = !picked.size;
+      delBtn.textContent = picked.size ? `Delete Selected (${picked.size})` : "Delete Selected";
+      const allVisiblePicked = visible.length > 0 && visible.every(f => picked.has(f.id));
+      $("selAll").textContent = allVisiblePicked ? "Unselect All" : "Select All";
+    }
+
+    $("selAll").onclick = () => {
+      const visible = getFilteredItems();
+      const allVisiblePicked = visible.length > 0 && visible.every(f => picked.has(f.id));
+      if (allVisiblePicked) visible.forEach(f => picked.delete(f.id));
+      else visible.forEach(f => picked.add(f.id));
+      renderThumbs();
+      updateDelBtn();
+    };
+
+    delBtn.onclick = async () => {
+      const ids = [...picked];
+      if (!ids.length) return;
+      if (!confirm(`Delete ${ids.length} product image(s) from "${curCat}"?`)) return;
+
+      delBtn.disabled = true;
+      setStatus(delStatus, "Deleting products…");
+
+      try {
+        const r = await post({
+          action: "deleteProductImages",
+          folderId: FOLDERS[curCat],
+          fileIds: ids,
+          ids
+        });
+        if (!r.success) throw new Error(r.error || "Delete failed.");
+
+        let fresh = null;
+        try { fresh = await loadItems(curCat); } catch (e) { console.warn("Reload failed", e); }
+
+        let deletedCount;
+        if (fresh) {
+          const freshIds = new Set(fresh.map(f => f.id));
+          deletedCount = ids.filter(id => !freshIds.has(id)).length;
+          items = fresh;
+        } else {
+          const del = Array.isArray(r.deletedIds) ? r.deletedIds : (r.deleted > 0 ? ids : []);
+          deletedCount = del.length;
+          items = items.filter(f => !del.includes(f.id));
+        }
+
+        picked.clear();
+        renderThumbs();
+        updateDelBtn();
+
+        const skipped = Array.isArray(r.skipped) ? r.skipped : [];
+        const errors = Array.isArray(r.errors) ? r.errors : [];
+        let msg = deletedCount > 0
+          ? `✓ ${deletedCount} image(s) deleted from Drive. ${r.sheetRowsDeleted || 0} spreadsheet row(s) removed.`
+          : "No files were deleted. Check that the Apps Script owner has edit access to the folder.";
+        if (skipped.length || errors.length) {
+          console.error("Deletion details:", r);
+          msg += ` ${skipped.length} skipped, ${errors.length} error(s).`;
+        }
+        setStatus(delStatus, msg, deletedCount > 0 ? "ok" : "err");
+      } catch (err) {
+        console.error(err);
+        setStatus(delStatus, "Delete failed: " + err.message, "err");
+        updateDelBtn();
+      }
+    };
+  </script>
+</body>
+</html>
